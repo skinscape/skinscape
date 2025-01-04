@@ -1,0 +1,23 @@
+:root {
+    --main-color: #004e64;
+    --secondary-color: #007080;
+    --inlay-color: #002f3f;
+    --scene-color: #003f54;
+    --error-color: #ff6f6f;
+
+    --primary-text: #e0f7f9;
+    --secondary-text: #a1cdd9;
+    --link-text: #00c4cc;
+
+    --icon-color: #b0e5e7;
+
+    --button-color: var(--main-color);
+    --button-hover: #006c7e;
+    --button-select: #005066;
+    --button-outline-hover: #ffffff;
+    --button-outline-select: #00a0b4;
+
+    --border-dark: #002b3b;
+    --border-color: #007090;
+    --border-light: #66b7bf;
+}

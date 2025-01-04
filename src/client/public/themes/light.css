@@ -1,0 +1,46 @@
+:root {
+    --main-color: #e4e5f1;
+    --secondary-color: #e4e5f1;
+    --inlay-color: #bababc;
+    --scene-color: var(--inlay-color);
+    --error-color: #ff4444;
+
+    --primary-text: #000000;
+    --secondary-text: #4e4e4e;
+    --link-text: #4393de;
+
+    --icon-color: #000000;
+
+    --status-color: #4393de;
+
+    --button-color: var(--main-color);
+    --button-hover: var(--main-color);
+    --button-select: #9eb8ff;
+    --button-outline-hover: #ffffff;
+    --button-outline-select: #00258a;
+
+    --border-dark: #000000;
+    --border-color: var(--secondary-color);
+    --border-light: var(--secondary-color);
+}
+
+.logo {
+    --border-dark: #000000;
+    color: #79b1e5;
+}
+
+.status-text {
+    color: #ffffff !important;
+}
+
+.palette, .scene {
+    background: repeating-conic-gradient(var(--inlay-color) 0% 25%, #b7b7b7 0% 50%) 50% / 32px 32px !important;
+}
+
+.menu:hover {
+    background: #f1f8a9;
+}
+
+.button.active {
+    --icon-color: #ffffff;
+}

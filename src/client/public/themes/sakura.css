@@ -1,0 +1,30 @@
+:root {
+    --main-color: #ffb7c5;
+    --secondary-color: #f5a3b3;
+    --inlay-color: #a46773;
+    --error-color: #d95468;
+
+    --primary-text: #ffffff;
+    --secondary-text: #704343;
+    --link-text: #a33b5d;
+
+    --icon-color: #b96e85;
+
+    --button-color: var(--main-color);
+    --button-hover: #f472a150;
+    --button-select: #f472a150;
+    --button-outline-hover: #ffffff;
+    --button-outline-select: #ffffff;
+
+    --border-dark: #762d3d;
+    --border-color: #b54d61;
+    --border-light: #ffccd6;
+}
+
+.logo {
+    color: var(--primary-text);
+}
+
+.button.active .button-img {
+    background-color: #ffffff;
+}

@@ -1,22 +1,15 @@
 {
-  "name": "skinscape-react",
-  "version": "0.1.0",
+  "name": "example",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "cd src/server && npm install && npm start",
+    "dev": "concurrently \"cd src/server && npx nodemon\" \"cd src/client && npm run dev\""
   },
-  "dependencies": {
-    "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106",
-    "next": "15.0.3"
+  "dependencies": {},
+  "engines": {
+    "node": "22.11.0",
+    "npm": "10.9.0"
   },
-  "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18"
-  }
+  "devDependencies": {}
 }

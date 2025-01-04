@@ -1,0 +1,33 @@
+:root {
+    --main-color: #2a2a2a;
+    --secondary-color: #4e4e4e;
+    --inlay-color: #101010;
+    --scene-color: #1c1c1c;
+    --error-color: #ff4444;
+
+    --primary-text: #ffffff;
+    --secondary-text: #ababab;
+    --link-text: #4393de;
+
+    --icon-color: #cecece;
+
+    --button-color: var(--main-color);
+    --button-hover: var(--main-color);
+    --button-select: #354063;
+    --button-outline-hover: #ffffff;
+    --button-outline-select: #466eeb;
+
+    --border-dark: #000000;
+    --border-color: #515152;
+    --border-light: #8a8a8b;
+}
+
+.logo:nth-child(1) { color: #ff595e; }
+.logo:nth-child(2) { color: #ff924c; }
+.logo:nth-child(3) { color: #ffca3a; }
+.logo:nth-child(4) { color: #c5ca30; }
+.logo:nth-child(5) { color: #8ac926; }
+.logo:nth-child(6) { color: #52a675; }
+.logo:nth-child(7) { color: #1982c4; }
+.logo:nth-child(8) { color: #4267ac; }
+.logo:nth-child(9) { color: #6a4c93; }
