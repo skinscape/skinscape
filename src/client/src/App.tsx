@@ -1,75 +1,42 @@
-import "./App.css";
+import "./style.css";
 
-import test from "./assets/data/test.json";
-import test2 from "./assets/data/test2.json";
+import React, {useContext, useEffect} from "react";
 
-import {fromEnkaArtifact} from "./utils/data.ts";
-import {ArtifactSet} from "./components/ArtifactSet";
-import {SettingsContextProvider} from "./context/SettingsProvider/SettingsProvider.tsx";
-import {getCvColor, getRvColor} from "./utils/helpers.ts";
-import {getAttributeOptions, HuTao} from "./utils/characters.ts";
+import {SettingsContext, SettingsContextProvider} from "./context/SettingsProvider";
+import {EditorPage} from "./pages/EditorPage";
+import {BrowserRouter, Route, Routes, Navigate} from "react-router";
+import {MessagePage} from "./pages/MessagePage";
 
-function App() {
-    const myArtifacts = test2.avatarInfoList.flatMap(avatar => {
-        return avatar.equipList
-            .filter(equipList => equipList.weapon == undefined)
-            .map(equipList => fromEnkaArtifact(equipList));
-    });
+export default function App() {
+    const { theme } = useContext(SettingsContext);
 
-    const artiList = [];
-    for (let i = 0; i < myArtifacts.length / 5; i++) {
-        const set = [];
-        for (let j = 0; j < 5; j++) {
-            const piece = myArtifacts[i * 5 + j];
-            if (piece) set.push(piece);
-        }
-        artiList.push(set);
-    }
+    useEffect(() => {
+        const themeName = theme == "auto" ? "dark" : theme;
 
-    const colorList = [];
-    const colorList2 = [];
+        const link = document.createElement("link");
+        link.type = "text/css";
+        link.rel = "stylesheet";
+        link.href = `/themes/${themeName}.css`;
 
-    for (let i = 0; i < 1001; i++) {
-        colorList2.push(getRvColor(i / 10) ?? [0, 0, 0]);
-    }
-
-    for (let i = 0; i < 1001; i++) {
-        colorList.push(getCvColor(54.4 / (1000 / i)) ?? [0, 0, 0]);
-    }
+        document.head.appendChild(link);
+        return () => { document.head.removeChild(link); }
+    }, [theme]);
 
     return (
         <SettingsContextProvider>
-            {artiList.map((set, i) => {
-                return (<ArtifactSet key={i} artifacts={set}></ArtifactSet>)
-            })}
-            <div className="colortest">
-                {colorList2.map(color => {
-                    const style = {
-                        width: "1px",
-                        height: "50px",
-                        background: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
-                    };
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/editor" replace />} />
+                    <Route path="/editor" element={<EditorPage />} />
 
-                    return (
-                        <div style={style}></div>
-                    )
-                })}
-            </div>
-            <div className="colortest">
-                {colorList.map(color => {
-                    const style = {
-                        width: "1px",
-                        height: "50px",
-                        background: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
-                    };
-
-                    return (
-                        <div style={style}></div>
-                    )
-                })}
-            </div>
+                    <Route path="*" element={
+                        <MessagePage>
+                            <p><b>404</b> Page not found.</p>
+                            <p>The URL was not found. <a href="/editor">Return to editor</a></p>
+                        </MessagePage>
+                    } />
+                </Routes>
+            </BrowserRouter>
         </SettingsContextProvider>
     );
 }
-
-export default App

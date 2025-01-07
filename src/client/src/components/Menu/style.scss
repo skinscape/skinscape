@@ -1,0 +1,54 @@
+.menu {
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--secondary-color);
+
+  margin: 4px 4px 6px 4px;
+  box-shadow: 0 0 0 2px var(--border-light), 0 2px 0 2px var(--border-color),
+  0 0 0 4px var(--border-dark), 0 2px 0 4px var(--border-dark);
+
+  hr {
+    border: 2px dashed var(--border-color);
+    margin: 4px 0;
+  }
+}
+
+.menu-item {
+  padding: 2px 6px;
+  cursor: url('../../assets/icons/hand_pointing@2x.png') 8 0, auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+
+  > p {
+    font-family: var(--font-small), serif;
+    color: var(--primary-text);
+    user-select: none;
+    text-wrap: nowrap;
+  }
+
+  kbd {
+    color: var(--secondary-text);
+  }
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.menu-item-sub {
+  overflow: visible;
+
+  > div {
+    position: absolute;
+  }
+
+  &:before {
+    content: ">";
+    order: 1;
+    font-size: 16px;
+    font-family: var(--font-small), serif;
+    color: var(--secondary-text);
+  }
+}

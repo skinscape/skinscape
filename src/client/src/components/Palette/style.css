@@ -1,0 +1,6 @@
+.palette {
+    width: calc(100% - 12px);
+    height: calc(100% - 12px);
+
+    background-color: var(--inlay-color);
+}

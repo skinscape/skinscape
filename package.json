@@ -1,15 +1,15 @@
 {
-  "name": "example",
+  "name": "skinscape",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "cd src/server && npm install && npm start",
     "dev": "concurrently \"cd src/server && npx nodemon\" \"cd src/client && npm run dev\""
   },
-  "dependencies": {},
+  "dependencies": {
+  },
   "engines": {
     "node": "22.11.0",
     "npm": "10.9.0"
-  },
-  "devDependencies": {}
+  }
 }

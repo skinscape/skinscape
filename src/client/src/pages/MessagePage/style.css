@@ -1,0 +1,35 @@
+.message-page {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+
+    font-family: 'Silkscreen', serif;
+    background-color: var(--main-color);
+    color: var(--primary-text);
+}
+
+.message-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message-page b {
+    font-weight: 100;
+    background-color: #408cef;
+    padding: 0 5px 0 5px;
+}
+
+.logo {
+    font-size: 20px;
+}
+
+.message-page a {
+    color: #408cef;
+    text-decoration: none;
+}

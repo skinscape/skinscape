@@ -1,0 +1,12 @@
+.tool-config {
+    display: flex;
+    flex-direction: row;
+}
+
+.tool-config li {
+    display: flex;
+    flex-direction: row;
+
+    font-family: Silkscreen, serif;
+    color: white;
+}

@@ -1,0 +1,23 @@
+.input {
+  margin: 4px;
+  box-shadow:
+          2px 0 0 0 var(--border-dark),
+          -2px 0 0 0 var(--border-dark),
+          0 2px 0 0 var(--border-dark),
+          0 -2px 0 0 var(--border-dark),
+          0 0 0 2px var(--border-light),
+          4px 0 0 0 var(--border-light),
+          -4px 0 0 0 var(--border-light),
+          0 4px 0 0 var(--border-light),
+          0 -4px 0 0 var(--border-color);
+  border: none;
+  outline: none;
+  font-family: var(--font-small), serif;
+  font-size: 16px;
+  background-color: var(--secondary-color);
+  color: var(--primary-text);
+}
+
+.input::placeholder {
+  filter: none;
+}

@@ -1,0 +1,55 @@
+.editor-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 34px;
+    gap: 12px;
+}
+
+.editor-sidebar:has(.picker-container) {
+    flex: 1;
+    min-width: 68px;
+    max-width: 120px;
+}
+
+.palette-container {
+    flex: 1;
+}
+
+.picker-container {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+}
+
+.editor-center {
+    flex: 5;
+    display: flex;
+}
+
+@media (max-width: 600px) {
+    .editor-sidebar {
+        flex-direction: row-reverse;
+        max-width: 600px !important;
+        width: 100%;
+    }
+
+    .picker-container {
+        height: 100%;
+        width: 25%;
+    }
+
+    .palette-container {
+        width: 75%;
+    }
+}
+
+.editor-scene {
+    position: relative;
+    flex: 1;
+    background: var(--scene-color, var(--inlay-color));
+    isolation: isolate;
+}
+
+.editor-scene-canvas {
+    width: 100%;
+    height: 100%;
+}

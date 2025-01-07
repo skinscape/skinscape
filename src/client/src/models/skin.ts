@@ -1,7 +1,7 @@
-import {rgbaBlendNormal} from "./blending";
-import {updateSkins} from "../stores";
+import {rgbaBlendNormal} from "../utils/blending";
 import type {RgbaColor} from "colord";
 import type {Model} from "./model";
+import {DataTexture} from "three";
 
 export type Texture = {
     size: number[];
@@ -14,6 +14,7 @@ export type Texture = {
 export class Skin {
     model: Model;
     data: Uint8ClampedArray;
+    texture: DataTexture;
 
     /**
      * Creates a new `Skin` with the given `Model` and `data`.
@@ -24,6 +25,9 @@ export class Skin {
     constructor(model: Model, texture: Texture) {
         this.model = model;
         this.data = Skin.possiblyResize(model, texture).data;
+        this.texture = new DataTexture(this.data, this.model.texture_size[0], this.model.texture_size[1]);
+        this.texture.flipY = true;
+        this.texture.needsUpdate = true;
     }
 
     protected static possiblyResize(model: Model, texture: Texture): Texture {
@@ -85,6 +89,7 @@ export class MutableSkin extends Skin {
     name: string;
     layers: Array<Layer>;
     tempLayer: TempLayer;
+    layerIndex: number;
 
     /**
      * Creates a new `MutableSkin` with the given `Model`.
@@ -99,6 +104,7 @@ export class MutableSkin extends Skin {
         this.layers = [new Layer(this, "default")];
         this.layers[0].data = this.data;
         this.tempLayer = new TempLayer(this);
+        this.layerIndex = 0;
     }
 
     static fromJSON(json: any): MutableSkin {
@@ -125,7 +131,7 @@ export class MutableSkin extends Skin {
     setTexture(texture: Texture) {
         this.data.set(Skin.possiblyResize(this.model, texture).data); // Will keep shape
         this.layers = [new Layer(this, "default")];
-        this.layers[0].data = this.data;
+        this.layers[0].data = new Uint8ClampedArray(this.data);
     }
 
     setModel(model: Model) {
@@ -175,6 +181,11 @@ export class MutableSkin extends Skin {
             }
         }
         this.data.set([color.r, color.g, color.b, color.a], pos);
+        this.texture.needsUpdate = true;
+    }
+
+    get activeLayer() {
+        return this.layers[this.layerIndex];
     }
 
 }
@@ -238,12 +249,11 @@ export class Layer {
      * @param y
      * @param color color to set
      * @param blend should color be blended (only affects colors with alpha)
-     * @param update should pixel be updated in the `MutableSkin`
      */
     setPixel(
         x: number, y: number,
         color: RgbaColor,
-        blend = true, update = true
+        blend = true,
     ) {
         let c = { r: color.r, g: color.g, b: color.b, a: Math.floor(color.a * 255) };
         const pos = (x * 4) + ((y * this.skin.model.texture_size[1] - 1) * 4);
@@ -255,7 +265,6 @@ export class Layer {
         }
         this.data.set([c.r, c.g, c.b, c.a], pos);
         this.skin.updatePixel(pos);
-        if (update) updateSkins();
     }
 
 }
@@ -275,10 +284,10 @@ export class TempLayer extends Layer {
     override setPixel(
         x: number, y: number,
         color: RgbaColor,
-        blend = true, update = false
+        blend = true
     ) {
         this.set.add([x, y])
-        super.setPixel(x, y, color, blend, update);
+        super.setPixel(x, y, color, blend);
     }
 
     /**
@@ -286,7 +295,7 @@ export class TempLayer extends Layer {
      */
     clear() {
         this.set.forEach((pos) => {
-            super.setPixel(pos[0], pos[1], {r: 0, g: 0, b: 0, a: 0}, false, false);
+            super.setPixel(pos[0], pos[1], {r: 0, g: 0, b: 0, a: 0}, false);
         });
         this.set.clear();
     }

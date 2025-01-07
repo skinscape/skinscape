@@ -3,9 +3,21 @@
     src: url("./assets/fonts/slkscr.woff2") format("woff2");
 }
 
+@font-face {
+    font-family: "SkinscapeLarge";
+    src: url("./assets/fonts/skinscape-large.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "SkinscapeSmall";
+    src: url("./assets/fonts/skinscape-small.ttf") format("truetype");
+}
+
 body, #root {
     position: absolute;
     inset: 0;
+    font-family: var(--font-small), serif;
+    color: var(--primary-text);
 }
 
 * {
@@ -13,28 +25,11 @@ body, #root {
     margin: 0;
 
     image-rendering: pixelated;
-    overflow: hidden;
 
     -webkit-user-select: none; /* Chrome/Safari */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE10+ */
     user-select: none;
-}
-
-.text {
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
-
-    /* Try to fix blurry fonts */
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: subpixel-antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
-    font-family: Silkscreen, serif;
-
-    cursor: url('./assets/icons/input@2x.png') 12 12, auto;
 }
 
 .border {

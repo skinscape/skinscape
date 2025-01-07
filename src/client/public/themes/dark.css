@@ -1,4 +1,7 @@
 :root {
+    --font-small: SkinscapeSmall;
+    --font-large: SkinscapeLarge;
+
     --main-color: #2a2a2a;
     --secondary-color: #4e4e4e;
     --inlay-color: #101010;
@@ -6,7 +9,7 @@
     --error-color: #ff4444;
 
     --primary-text: #ffffff;
-    --secondary-text: #ababab;
+    --secondary-text: #a2a2a2;
     --link-text: #4393de;
 
     --icon-color: #cecece;
@@ -18,8 +21,8 @@
     --button-outline-select: #466eeb;
 
     --border-dark: #000000;
-    --border-color: #515152;
-    --border-light: #8a8a8b;
+    --border-color: #3f3f3f;
+    --border-light: #9b9b9b;
 }
 
 .logo:nth-child(1) { color: #ff595e; }

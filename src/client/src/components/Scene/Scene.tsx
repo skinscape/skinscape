@@ -23,7 +23,7 @@ type ModelDisplayProps = {
  * - gridlines base (3)
  * - gridlines overlay (4)
  */
-export const ModelDisplay: React.FC<ModelDisplayProps> = ({
+export const Scene: React.FC<ModelDisplayProps> = ({
     skin,
 }) => {
     const model = skin.model;

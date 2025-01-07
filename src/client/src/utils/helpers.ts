@@ -1,4 +1,9 @@
-import {Skin} from "./skin.ts";
+import {Skin} from "../models/skin.ts";
+import {colord, extend, RgbaColor} from "colord";
+import labPlugin from "colord/plugins/mix";
+import React from "react";
+
+extend([labPlugin]);
 
 export function getSkinSubsection(
     skin: Skin,
@@ -29,26 +34,50 @@ export function getSkinSubsection(
     return subsection;
 }
 
-export function generateFaviconDataUrl(rgbaArray: Uint8ClampedArray, size: number): string {
+export function getFaviconDataUrl(
+    rgbaArray: Uint8ClampedArray,
+    width: number, height: number,
+): string {
     const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext('2d')!;
 
-    // Create ImageData
-    const imageData = ctx.createImageData(size, size);
+    const imageData = ctx.createImageData(width, height);
     imageData.data.set(rgbaArray);
-
     ctx.putImageData(imageData, 0, 0);
 
-    // Scale up for better visibility
-    const scaledCanvas = document.createElement('canvas');
-    const scale = 16; // Scale factor
-    scaledCanvas.width = size * scale;
-    scaledCanvas.height = size * scale;
-    const scaledCtx = scaledCanvas.getContext('2d')!;
-    scaledCtx.imageSmoothingEnabled = false; // Prevent blurring
-    scaledCtx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+    return canvas.toDataURL("image/png");
+}
 
-    return scaledCanvas.toDataURL('image/png');
+export function getContrastingColor(rgba: RgbaColor) {
+    const color = colord(rgba).alpha(1).invert();
+    const { s, v } = color.toHsv();
+
+    let light = Math.pow(100 - v, (100 - s) / 2);
+    let dark = Math.pow(v, (100 - s) / 2);
+    const sum = light + dark;
+    light /= sum;
+    dark /= sum;
+
+    return color
+        .mix({ r: 255, g: 255, b: 255, a: 1 }, dark * (100 - s) / 100)
+        .mix({ r: 0, g: 0, b: 0, a: 1 }, light * (100 - s) / 100)
+        .darken(1 - rgba.a)
+        .toRgb();
+}
+
+export function noContextMenu(event: React.MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const rightClickEvent = new MouseEvent("click", {
+        cancelable: true,
+        view: window,
+        button: 2,
+        clientX: event.clientX,
+        clientY: event.clientY,
+    });
+
+    event.target?.dispatchEvent(rightClickEvent);
 }

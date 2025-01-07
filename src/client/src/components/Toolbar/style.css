@@ -1,0 +1,46 @@
+.toolbar {
+    width: 40px;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    gap: 4px;
+}
+
+.toolbar-button {
+    margin: 2px;
+    padding: 2px;
+    width: calc(100% - 8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 1 / 1;
+
+    cursor: url('../../assets/icons/hand_pointing@2x.png') 8 0, auto;
+}
+
+.toolbar-button:hover {
+    background: var(--button-hover);
+    --border-dark: var(--button-outline-hover);
+}
+
+.toolbar-button {
+    background: var(--button-color, var(--main-color));
+    box-shadow: 0 2px 0 0 var(--border-dark), 0 -2px 0 0 var(--border-dark), 2px 0 0 0 var(--border-dark), -2px 0 0 0 var(--border-dark);
+}
+
+.toolbar-button.active {
+    background: var(--button-select);
+    --border-dark: var(--button-outline-select);
+}
+
+.toolbar-button.active:hover {
+    --border-dark: var(--button-outline-hover);
+}
+
+.toolbar-button-image {
+    height: 100%;
+    width: 100%;
+    mask-size: cover;
+    mask-mode: luminance;
+    background-color: var(--icon-color);
+}

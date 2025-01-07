@@ -1,1 +1,1 @@
-export * from "./ModelDisplay.tsx";
+export * from "./Scene.tsx";

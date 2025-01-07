@@ -1,7 +1,7 @@
 import React from "react";
 import {Direction, ModelElement} from "../../models/model.ts";
 
-import {BufferGeometry, Euler, Vector3} from "three";
+import {Euler, Vector3} from "three";
 
 import {
     Line,
@@ -54,8 +54,6 @@ export const GridBox: React.FC<{
                         .push([new Vector3(-halfWidth, y, 0), new Vector3(halfWidth, y, 0)]);
                 }
 
-                new BufferGeometry()
-
                 return (
                     <group
                         key={direction}
@@ -84,7 +82,7 @@ export const GridBox: React.FC<{
                                 layers={isOverlay ? 4 : 3}
                             />
                         })}
-                        <mesh renderOrder={10000} position={[0, 0, -0.01]}>
+                        <mesh renderOrder={10000} position={[0, 0, -0.01]} layers={isOverlay ? 4 : 3}>
                             <planeGeometry args={[data.width, data.height]} />
                             <meshBasicMaterial transparent={true} opacity={0} />
                         </mesh>

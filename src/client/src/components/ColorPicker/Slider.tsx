@@ -1,70 +1,66 @@
-import React from "react";
+import React, {useEffect, useRef, useState} from "react";
 
-type IndicatorProps = {
-    pos: { x: number, y: number },
-}
+import {Indicator} from "./Indicator.tsx";
+import {useWindowEvent} from "../../hooks/useWindowEvent";
+import {useColorContext} from "../../stores.ts";
+import {noContextMenu} from "../../utils/helpers.ts";
 
-export const Color: React.FC<IndicatorProps> = ({
-                                                        pos,
-                                                    }) => {
-    const style = {
-        left: `${pos.x - 2}px`,
-        top: `${pos.y - 2}px`,
-    } as React.CSSProperties;
+export const Slider: React.FC = () => {
+    const { hsva, setHsva } = useColorContext();
+    const [pos, setPos] = useState({ x: 0, y: 0 });
+
+    const button = useRef(-1);
+    const divRef = useRef<HTMLDivElement>(null);
+
+    function onMouseDown(event: React.MouseEvent) {
+        button.current = event.button;
+        if (button.current !== -1) {
+            document.getElementById("cursor-overlay")!.style.display = "block";
+            updateHue(event.clientX);
+        }
+    }
+
+    function updateHue(clientX: number) {
+        if (!divRef.current) return;
+        const rect = divRef.current.getBoundingClientRect();
+
+        const h = Math.min(360, Math.max(0,
+            (clientX - rect.left) / rect.width * 360
+        ));
+
+        const newHsva = { h, s: hsva.s, v: hsva.v, a: hsva.a };
+        setHsva(newHsva);
+    }
+
+    useWindowEvent("mouseup", (event: MouseEvent) => {
+        if (button.current === event.button) {
+            document.getElementById("cursor-overlay")!.style.display = "none";
+            button.current = -1;
+        }
+    });
+
+    useWindowEvent("mousemove", (event: MouseEvent) => {
+        if (button.current !== -1) updateHue(event.clientX);
+    }, [hsva]);
+
+    useEffect(() => {
+        if (!divRef.current) return;
+        const rect = divRef.current.getBoundingClientRect();
+
+        const x = rect.width * hsva.h / 360;
+        const y = rect.height / 2;
+        setPos({ x, y });
+    }, [hsva]);
 
     return (
-        <div className="picker-indicator" style={style} />
+        <div
+            className="color-slider"
+            tabIndex={0}
+            ref={divRef}
+            onMouseDown={onMouseDown}
+            onContextMenu={noContextMenu}
+        >
+            <Indicator pos={pos}/>
+        </div>
     )
 }
-
-/*
-<script>
-    import { colord } from "colord";
-
-    export let rgba;
-    export let color;
-
-    function click() {
-        rgba = Object.assign({}, color)
-    }
-
-    $: isSelected = rgba.r === color.r && rgba.g === color.g && rgba.b === color.b && rgba.a === color.a;
-</script>
-
-<!-- Gahh!! I HATE blind people!!!! -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<div
-    class:selected={isSelected}
-    on:click={click}
-    style="--color: {colord(color).toHex()}"
->
-
-</div>
-
-<style>
-    div {
-        position: relative;
-        width: 25px;
-        height: 25px;
-        margin: 2px 0 0 2px;
-        background: repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 50% / 25px 25px;
-        box-shadow: 0 0 0 2px var(--highlight-dark);
-    }
-
-    div:before {
-        content: "";
-        position: absolute;
-		inset: 0;
-        background: var(--color);
-    }
-
-    .selected {
-        z-index: 1;
-        width: 21px;
-        height: 21px;
-        margin: 4px 2px 2px 4px;
-        box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
-    }
-</style>
- */

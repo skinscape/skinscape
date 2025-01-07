@@ -1,21 +1,21 @@
-import {createContext, useEffect, useState} from "react";
+import React, {createContext, useEffect, useState} from "react";
 
-export type Metric = "RV" | "CV";
+export type Theme = "auto" | "light" | "dark" | "aseprite" | "modern-dark";
 
 type SettingsProviderContextType = {
-    metric?: Metric;
-    setMetric: (metric: Metric) => void;
+    theme: Theme;
+    setTheme: (theme: Theme) => void;
 };
 
 const defaultValue = {
-    metric: "RV",
-    setMetric: () => {},
+    theme: "dark",
+    setTheme: () => {},
 } as SettingsProviderContextType;
 
 const SettingsContext = createContext(defaultValue);
 
 const SettingsContextProvider: React.FC<{ children: any }> = ({ children }) => {
-    const [metric, setMetric] = useState<Metric>();
+    const [theme, setTheme] = useState<Theme>(defaultValue.theme);
 
     const lsKey = "settings";
 
@@ -27,12 +27,12 @@ const SettingsContextProvider: React.FC<{ children: any }> = ({ children }) => {
             setFunc: any,
             key: string,
             value: any,
-            defaultValue: any = false
+            defaultValue: any = false,
         ) => {
             setFunc(savedObj[key] || value || defaultValue);
         };
 
-        setIfDifferent(setMetric, "metric", metric, "RV");
+        setIfDifferent(setTheme, "theme", theme, "auto");
     }, [localStorage]);
 
     // save to local storage
@@ -47,17 +47,17 @@ const SettingsContextProvider: React.FC<{ children: any }> = ({ children }) => {
             }
         };
 
-        assignIfDiffAndNotUndefined("metric", metric);
+        assignIfDiffAndNotUndefined("theme", theme);
 
         if (!dirty) return;
 
         const newObj = { ...oldObj };
         localStorage.setItem(lsKey, JSON.stringify(newObj));
-    }, [metric]);
+    }, [theme]);
 
     const value = {
-        metric,
-        setMetric,
+        theme,
+        setTheme,
     };
 
     return (

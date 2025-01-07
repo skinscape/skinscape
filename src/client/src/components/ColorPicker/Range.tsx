@@ -3,10 +3,11 @@ import React, {useContext, useEffect, useRef, useState} from "react";
 import {colord} from "colord";
 import {Indicator} from "./Indicator.tsx";
 import {useWindowEvent} from "../../hooks/useWindowEvent";
-import {useEditorContext} from "../../stores.ts";
+import {useColorContext} from "../../stores.ts";
+import {noContextMenu} from "../../utils/helpers.ts";
 
-export const Picker: React.FC = () => {
-    const { hsva, setHsva } = useEditorContext();
+export const Range: React.FC = () => {
+    const { hsva, setHsva } = useColorContext();
     const [pos, setPos] = useState({ x: 0, y: 0 });
 
     let button = useRef(-1);
@@ -15,10 +16,6 @@ export const Picker: React.FC = () => {
     function onMouseDown(event: React.MouseEvent) {
         button.current = event.button;
         updateHue(event.clientX, event.clientY);
-    }
-
-    function onContextMenu(event: React.MouseEvent) {
-        event.preventDefault();
     }
 
     function updateHue(clientX: number, clientY: number) {
@@ -62,11 +59,11 @@ export const Picker: React.FC = () => {
 
     return (
         <div
-            className="picker"
+            className="color-range"
             tabIndex={0}
             ref={divRef}
             onMouseDown={onMouseDown}
-            onContextMenu={onContextMenu}
+            onContextMenu={noContextMenu}
             style={style}
         >
             <Indicator pos={pos} />

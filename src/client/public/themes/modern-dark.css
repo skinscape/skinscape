@@ -1,0 +1,68 @@
+:root {
+    --main-color: #2a2a2a;
+    --secondary-color: #4e4e4e;
+    --inlay-color: #101010;
+    --scene-color: #1c1c1c;
+    --error-color: #ff4444;
+
+    --primary-text: #ffffff;
+    --secondary-text: #ababab;
+    --link-text: #4393de;
+
+    --icon-color: #cecece;
+
+    --button-color: var(--main-color);
+    --button-hover: var(--main-color);
+    --button-select: #354063;
+    --button-outline-hover: #ffffff;
+    --button-outline-select: #466eeb;
+
+    --border-dark: #000000;
+    --border-color: #000000;
+    --border-light: #8a8a8b;
+}
+
+.text {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.border {
+    margin: 0;
+    box-shadow: rgba(149, 157, 165, 0.2) 0 8px 24px;
+
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+}
+
+.border-small {
+    margin: 0;
+    box-shadow: rgba(149, 157, 165, 0.2) 0 8px 24px;
+
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+/* ColorPicker */
+.color-range:before, .color-slider:before {
+    background: none;
+}
+
+.color-button .text {
+    font-weight: bold;
+}
+
+.color-indicator {
+    box-shadow: none;
+}
+
+.color-indicator {
+    box-shadow: none;
+    width: 5px;
+    height: 5px;
+
+    transform: translate(-3px, -3px);
+
+    border-radius: 7px;
+    border: 2px solid #000;
+    background-color: #00000000;
+}
