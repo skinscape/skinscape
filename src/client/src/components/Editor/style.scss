@@ -23,6 +23,9 @@
 .editor-center {
     flex: 5;
     display: flex;
+    
+    min-width: 0;
+    min-height: 0;
 }
 
 @media (max-width: 600px) {
@@ -47,6 +50,9 @@
     flex: 1;
     background: var(--scene-color, var(--inlay-color));
     isolation: isolate;
+
+    min-width: 0; // VERY IMPORTANT!
+    min-height: 0;
 }
 
 .editor-scene-canvas {

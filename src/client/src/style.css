@@ -17,7 +17,7 @@ body, #root {
     position: absolute;
     inset: 0;
     font-family: var(--font-small), serif;
-    color: var(--primary-text);
+    color: var(--text-primary);
 }
 
 * {

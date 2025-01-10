@@ -110,6 +110,7 @@
     padding: 0;
     overflow: hidden;
     font-family: var(--font-small), serif;
+    font-size: 16px;
     color: var(--inverted) !important;
     height: 100%;
     cursor: url('../../assets/icons/input@2x.png') 12 12, auto;

@@ -1,0 +1,20 @@
+.menubar {
+  width: 100%;
+  padding: 0 12px;
+
+  display: flex;
+  flex-direction: row;
+}
+
+.menubar-item {
+  overflow: visible;
+  padding: 0 6px;
+
+  > div {
+    position: absolute;
+  }
+
+  &:hover {
+    background-color: var(--secondary-color);
+  }
+}

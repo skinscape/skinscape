@@ -17,29 +17,54 @@ export const Menu: React.FC<MenuProps> = ({
 };
 
 type MenuItemProps = {
-    text: string,
+    label: string,
     shortcut?: string,
+    enabled?: boolean,
     onClick?: (event: React.MouseEvent) => void;
 };
 
 export const MenuItem: React.FC<MenuItemProps> = ({
-    text, shortcut, onClick
+    label: text, shortcut, enabled, onClick
 }) => {
+    if (enabled == false) onClick = undefined;
+
     return (
-        <div className="menu-item" onClick={onClick}>
+        <div className={enabled == false ? "menu-item disabled" : "menu-item"} onClick={onClick}>
             <p className="text">{text}</p>
             {shortcut && <kbd className="text">{shortcut}</kbd>}
         </div>
     );
 };
 
+type MenuItemToggleProps = {
+    label: string,
+    shortcut?: string,
+
+    toggled: boolean,
+    setToggled(toggled: boolean): void,
+};
+
+export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
+    label, shortcut, toggled, setToggled
+}) => {
+    return (
+        <div className="menu-item" onClick={() => setToggled(!toggled)}>
+            <div>
+                {toggled ? <div className="toggle-indicator-on"></div> : <div className="toggle-indicator-off"></div>}
+                <p className="text">{label}</p>
+            </div>
+            {shortcut && <kbd className="text">{shortcut}</kbd>}
+        </div>
+    );
+};
+
 type MenuItemDropdownProps = {
-    text: string,
+    label: string,
     children: React.ReactNode,
 };
 
 export const MenuItemDropdown: React.FC<MenuItemDropdownProps> = ({
-    text, children
+    label: text, children
 }) => {
     const [visible, setVisible] = useState<boolean>(false);
     const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -49,7 +74,7 @@ export const MenuItemDropdown: React.FC<MenuItemDropdownProps> = ({
     function onMouseOver() {
         if (!divRef.current) return;
 
-        setPos({ x: divRef.current.offsetWidth + 4, y: divRef.current.offsetTop - 4 });
+        setPos({ x: divRef.current.offsetWidth, y: divRef.current.offsetTop - 4 });
         setVisible(true);
     }
 

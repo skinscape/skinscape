@@ -1,9 +1,18 @@
-import create from 'zustand';
-import {persist} from "zustand/middleware";
-import {colord, HsvaColor, RgbaColor} from "colord";
-import {getTool, ToolProps} from "./models/tool.ts";
+import { create, StateCreator } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import { colord, HsvaColor, RgbaColor } from "colord";
+import { EyedropperHandler, getTool, ToolProps } from "./models/tool.ts";
+import { MutableSkin } from './models/skin.ts';
+import { Models } from './models/model.ts';
 
-export const useColorContext = create(
+type ColorState = {
+    rgba: RgbaColor,
+    setRgba: (rgba: RgbaColor) => any,
+    hsva: HsvaColor,
+    setHsva: (hsva: HsvaColor) => any,
+};
+
+export const useColorContext = create<ColorState>()(
     persist(
         (set, get) => ({
             rgba: { r: 255, g: 0, b: 0, a: 1 },
@@ -23,13 +32,20 @@ export const useColorContext = create(
     ),
 );
 
-export const useToolContext = create(
+type ToolState = {
+    activeTool: string,
+    setActiveTool: (activeTool: string) => void,
+    toolProps: ToolProps,
+    setToolProps: (toolProps: ToolProps) => void,
+};
+
+export const useToolContext = create<ToolState>()(
     persist(
         (set, get) => ({
             activeTool: "pencil",
             setActiveTool: (activeTool: string) => {
-                if (activeTool === "eyedropper") { // @ts-ignore
-                    getTool("eyedropper").handler.previous = get().activeTool;
+                if (activeTool == "eyedropper") {
+                    (getTool("eyedropper").handler as EyedropperHandler).previous = get().activeTool;
                 }
                 set({ activeTool });
             },
@@ -46,16 +62,77 @@ export const useToolContext = create(
     ),
 );
 
-export const useEditorContext = create(
+type EditorState = {
+    overlay: boolean,
+    setOverlay: (overlay: boolean) => void,
+    gridlines: boolean,
+    setGridlines: (gridlines: boolean) => void,
+    elementToggles: Array<string>,
+    setElementToggles: (elementToggles: Array<string>) => void,
+};
+
+export const useEditorContext = create<EditorState>()(
     persist(
         (set, get) => ({
             overlay: false,
             setOverlay: (overlay: boolean) => set({ overlay }),
             gridlines: false,
             setGridlines: (gridlines: boolean) => set({ gridlines }),
+            elementToggles: [],
+            setElementToggles: (elementToggles: Array<string>) => set({ elementToggles }),
         }),
         {
             name: 'editorContext',
+        },
+    ),
+);
+
+type SettingsState = {
+    theme: string,
+    setTheme: (theme: string) => void,
+};
+
+export const useSettingsContext = create<SettingsState>()(
+    persist(
+        (set, get) => ({
+            theme: "dark",
+            setTheme: (theme: string) => set({ theme }),
+        }),
+        {
+            name: 'settingsContext',
+        },
+    ),
+);
+
+type SkinState = {
+    skins: Array<MutableSkin>,
+    setSkins: (skins: Array<MutableSkin>) => void,
+};
+
+const skinStorage = createJSONStorage(() => localStorage, {
+    reviver: (key: string, value: any) => {
+        if (key == "skins") {
+            return value.map((it: any) => MutableSkin.fromJSON(it));
+        }
+        return value;
+    },
+    replacer: (key: string, value: any) => {
+        if (key == "skins") {
+            return value.map((it: any) => it.toJSON());
+        }
+        return value;
+    },
+});
+
+export const useSkinContext = create<SkinState>()(
+    persist(
+        (set, get) => ({
+            skins: [new MutableSkin(Models.alex64)],
+            setSkins: (skins: Array<MutableSkin>) => set({ skins })
+        }),
+        {
+            name: 'skinContext',
+            storage: skinStorage,
         },
     ),
 );

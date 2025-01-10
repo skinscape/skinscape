@@ -1,8 +1,10 @@
-import {MutableSkin} from "./skin.ts";
+import {Layer, MutableSkin} from "./skin.ts";
 import {colord, extend, RgbaColor} from "colord";
 import labPlugin from "colord/plugins/lab";
 import {Models} from "./model.ts";
 import {useColorContext, useToolContext} from "../stores.ts";
+import { getToolProp } from "../utils/helpers.ts";
+import { EditChangePixels, PixelChange } from "./history.ts";
 
 extend([labPlugin]);
 
@@ -52,13 +54,15 @@ abstract class ToolHandler {
 
 export class PencilHandler extends ToolHandler {
 
-    private visited: Set<string>;
-    size: number;
+    private changes: Array<PixelChange>;
 
     constructor() {
         super();
-        this.visited = new Set();
-        this.size = 1;
+        this.changes = [];
+    }
+
+    hasVisited(x: number, y: number): boolean {
+        return this.changes.find(change => change.x == x && change.y == y) != undefined;
     }
 
     hover(skin: MutableSkin, x: number, y: number, color: RgbaColor) {
@@ -67,21 +71,27 @@ export class PencilHandler extends ToolHandler {
     }
 
     down(skin: MutableSkin, x: number, y: number, color: RgbaColor) {
-        if (this.visited.has([x, y].toString())) return;
+        if (this.hasVisited(x, y)) return;
         const layer = skin.activeLayer;
+
+        const change = { x, y, from: layer.getPixel(x, y), to: color };
         layer.setPixel(x, y, color);
-        this.visited.add([x, y].toString());
+        this.changes.push(change);
     }
 
     drag(skin: MutableSkin, x: number, y: number, color: RgbaColor) {
-        if (this.visited.has([x, y].toString())) return;
+        if (this.hasVisited(x, y)) return;
         const layer = skin.activeLayer;
+
+        const change = { x, y, from: layer.getPixel(x, y), to: color };
         layer.setPixel(x, y, color);
-        this.visited.add([x, y].toString());
+        this.changes.push(change);
     }
 
     up(skin: MutableSkin, color: RgbaColor) {
-        this.visited.clear();
+        if (this.changes.length < 1) return;
+        skin.history.push(new EditChangePixels(this.changes));
+        this.changes = [];
     }
 
 }
@@ -123,79 +133,54 @@ export class EyedropperHandler extends ToolHandler {
 
 export class FillHandler extends ToolHandler {
 
-    tolerance: number;
+    fill(
+        skin: MutableSkin, x: number, y: number, color: RgbaColor, temp: boolean
+    ) {
+        const tolerance = getToolProp("fill", "tolerance");
 
-    constructor() {
-        super();
-        this.tolerance = 0.01;
+        const sampleLayer = skin.activeLayer;
+        const visited = new Set([[x, y].toString()]);
+        const queue = [[x, y]];
+
+        const base: RgbaColor = sampleLayer.getPixel(x, y);
+        const bounds = Models.getFaceUV(skin.model, [x, y]);
+
+        // dfs
+        while (queue.length > 0) {
+            const pos = queue.pop()!;
+
+            const col = sampleLayer.getPixel(pos[0], pos[1]);
+            // console.log(pos, base, col);
+            if (colord(base).delta(col) <= tolerance / 100) {
+                if (temp) {
+                    skin.tempLayer.setPixel(pos[0], pos[1], { r: color.r, g: color.g, b: color.b, a: 0.2 });
+                } else {
+                    sampleLayer.setPixel(pos[0], pos[1], { r: color.r, g: color.g, b: color.b, a: color.a });
+                }
+                const neighbors = [];
+                for (let i = -1; i < 2; i += 2) neighbors.push([pos[0] + i, pos[1]]);
+                for (let i = -1; i < 2; i += 2) neighbors.push([pos[0], pos[1] + i]);
+
+                // console.log(neighbors);
+
+                for (let i = 0; i < 4; i++) {
+                    const n = neighbors[i];
+                    if (visited.has(n.toString())) continue;
+                    if (n[0] >= bounds[0] + 1 && n[0] <= bounds[2] && n[1] >= bounds[1] && n[1] < bounds[3]) {
+                        visited.add(n.toString());
+                        queue.push(n);
+                    }
+                }
+            }
+        }
     }
 
     hover(skin: MutableSkin, x: number, y: number, color: RgbaColor) {
-        let layer = skin.activeLayer;
-        let visited = new Set([[x, y].toString()]);
-        let queue = [[x, y]];
-
-        let base: RgbaColor = layer.getPixel(x, y);
-        let bounds = Models.getFaceUV(skin.model, [x, y]);
-
-        // dfs
-        while (queue.length > 0) {
-            const pos = queue.pop()!;
-
-            const col = layer.getPixel(pos[0], pos[1]);
-            // console.log(pos, base, col);
-            if (colord(base).delta(col) <= this.tolerance) {
-                skin.tempLayer.setPixel(pos[0], pos[1], { r: color.r, g: color.g, b: color.b, a: 0.2 });
-                const neighbors = [];
-                for (let i = -1; i < 2; i += 2) neighbors.push([pos[0] + i, pos[1]]);
-                for (let i = -1; i < 2; i += 2) neighbors.push([pos[0], pos[1] + i]);
-
-                // console.log(neighbors);
-
-                for (let i = 0; i < 4; i++) {
-                    const n = neighbors[i];
-                    if (visited.has(n.toString())) continue;
-                    if (n[0] >= bounds[0] + 1 && n[0] <= bounds[2] && n[1] >= bounds[1] && n[1] < bounds[3]) {
-                        visited.add(n.toString());
-                        queue.push(n);
-                    }
-                }
-            }
-        }
+        this.fill(skin, x, y, color, true);
     }
 
     down(skin: MutableSkin, x: number, y: number, color: RgbaColor) {
-        let layer = skin.activeLayer;
-        let visited = new Set([[x, y].toString()]);
-        let queue = [[x, y]];
-
-        let base: RgbaColor = layer.getPixel(x, y);
-        let bounds = Models.getFaceUV(skin.model, [x, y]);
-
-        // dfs
-        while (queue.length > 0) {
-            const pos = queue.pop()!;
-
-            const col = layer.getPixel(pos[0], pos[1]);
-            // console.log(pos, base, col);
-            if (colord(base).delta(col) <= this.tolerance) {
-                layer.setPixel(pos[0], pos[1], color);
-                const neighbors = [];
-                for (let i = -1; i < 2; i += 2) neighbors.push([pos[0] + i, pos[1]]);
-                for (let i = -1; i < 2; i += 2) neighbors.push([pos[0], pos[1] + i]);
-
-                // console.log(neighbors);
-
-                for (let i = 0; i < 4; i++) {
-                    const n = neighbors[i];
-                    if (visited.has(n.toString())) continue;
-                    if (n[0] >= bounds[0] + 1 && n[0] <= bounds[2] && n[1] >= bounds[1] && n[1] < bounds[3]) {
-                        visited.add(n.toString());
-                        queue.push(n);
-                    }
-                }
-            }
-        }
+        this.fill(skin, x, y, color, false);
     }
 
 }

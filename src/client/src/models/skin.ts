@@ -1,6 +1,7 @@
 import {rgbaBlendNormal} from "../utils/blending";
 import type {RgbaColor} from "colord";
 import type {Model} from "./model";
+import {History} from "./history";
 import {DataTexture} from "three";
 
 export type Texture = {
@@ -89,7 +90,8 @@ export class MutableSkin extends Skin {
     name: string;
     layers: Array<Layer>;
     tempLayer: TempLayer;
-    layerIndex: number;
+    activeLayerId: string;
+    history: History;
 
     /**
      * Creates a new `MutableSkin` with the given `Model`.
@@ -102,16 +104,19 @@ export class MutableSkin extends Skin {
         super(model, texture);
         this.name = "Untitled Skin";
         this.layers = [new Layer(this, "default")];
-        this.layers[0].data = this.data;
+        this.layers[0].data = this.data.slice();
         this.tempLayer = new TempLayer(this);
-        this.layerIndex = 0;
+        this.activeLayerId = this.layers[0].uuid;
+        this.history = new History(this);
     }
 
     static fromJSON(json: any): MutableSkin {
         // @ts-ignore
         const skin = new MutableSkin(json.model);
         skin.layers = json.layers.map((layer: any) => Layer.fromJSON(layer, skin));
+        skin.activeLayerId = json.activeLayerId;
         skin.name = json.name;
+        skin.history = History.fromJSON(json.history, skin);
 
         for (let pos = 0; pos < skin.data.length; pos += 4) {
             skin.updatePixel(pos);
@@ -124,7 +129,9 @@ export class MutableSkin extends Skin {
         return {
             name: this.name,
             layers: this.layers,
+            activeLayerId: this.activeLayerId,
             model: this.model,
+            history: this.history,
         }
     }
 
@@ -132,6 +139,7 @@ export class MutableSkin extends Skin {
         this.data.set(Skin.possiblyResize(this.model, texture).data); // Will keep shape
         this.layers = [new Layer(this, "default")];
         this.layers[0].data = new Uint8ClampedArray(this.data);
+        this.activeLayerId = this.layers[0].uuid;
     }
 
     setModel(model: Model) {
@@ -184,8 +192,12 @@ export class MutableSkin extends Skin {
         this.texture.needsUpdate = true;
     }
 
-    get activeLayer() {
-        return this.layers[this.layerIndex];
+    get activeLayer(): Layer {
+        const layer = this.layers.find(it => it.uuid == this.activeLayerId);
+        if (layer == undefined) {
+            throw new Error("Active layer UUID does not point to a valid layer");
+        }
+        return layer;
     }
 
 }
@@ -200,17 +212,21 @@ export class Layer {
     name: string;
     isActive: boolean;
 
+    uuid: string;
+
     constructor(skin: MutableSkin, name: string) {
         this.skin = skin;
         this.data = new Uint8ClampedArray(skin.model.texture_size[0] * skin.model.texture_size[1] * 4);
         this.name = name;
         this.isActive = true;
+        this.uuid = crypto.randomUUID();
     }
 
     static fromJSON(json: any, skin: MutableSkin) {
         const layer = new Layer(skin, json.name);
         layer.data.set(json.data);
         layer.isActive = json.isActive;
+        layer.uuid = json.uuid;
         return layer;
     }
 
@@ -219,6 +235,7 @@ export class Layer {
             data: Array.from(this.data),
             name: this.name,
             isActive: this.isActive,
+            uuid: this.uuid,
         }
     }
 

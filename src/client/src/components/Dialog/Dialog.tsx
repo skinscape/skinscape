@@ -1,6 +1,6 @@
 import "./style.scss";
 
-import React from "react";
+import { useDialog } from "../../hooks/useDialog/useDialog";
 
 type DialogProps = {
     children: React.ReactNode,
@@ -9,12 +9,20 @@ type DialogProps = {
 export const Dialog: React.FC<DialogProps> = ({
     children,
 }) => {
+    const { hideDialog } = useDialog();
 
     return (
-        <div className="dialog-container">
-            <div className="dialog">
+        <div 
+            className="dialog-container"
+            onClick={hideDialog}
+        >
+            <div 
+                className="dialog"
+                onClick={e => e.stopPropagation()}
+                onKeyDown={e => e.stopPropagation()}
+            >
                 {children}
             </div>
         </div>
-    )
+    );
 };

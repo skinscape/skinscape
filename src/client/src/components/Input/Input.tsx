@@ -1,12 +1,12 @@
 import "./style.scss";
 
-import React from "react";
+import React, { forwardRef } from "react";
 
-export const Input = React.forwardRef<
+export const Input = forwardRef<
     HTMLInputElement, React.ComponentProps<"input">
 >(({ type, ...props }, ref) => {
         return (
-            <input ref={ref} type={type} className="input" {...props} />
+            <input ref={ref} type={type} className="input" spellCheck={false} {...props} />
         )
     }
 );

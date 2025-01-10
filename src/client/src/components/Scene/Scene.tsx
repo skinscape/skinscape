@@ -44,9 +44,8 @@ export const Scene: React.FC<ModelDisplayProps> = ({
                 const uv = getElementUv(element);
 
                 return (
-                    <group key={element.name}>
+                    <group key={element.name} name={element.name}>
                         <mesh
-                            name={name}
                             position={[xyz[0], xyz[1], xyz[2] + o1++ * 0.001]}
                             renderOrder={!isOverlay ? r1++ : r2++}
                             layers={isOverlay ? 2 : 1}

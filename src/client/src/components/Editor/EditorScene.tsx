@@ -40,7 +40,7 @@ export const EditorScene: React.FC<EditorSceneProps> = ({
         if (event.key === "o") setOverlay(!overlay);
     });
 
-    useSubscribing(useEditorContext, ({ overlay, gridlines }) => {
+    useSubscribing(useEditorContext, ({ overlay, gridlines, elementToggles }) => {
         if (!threeRef.current) return;
         const { camera, raycaster, scene } = threeRef.current;
 
@@ -50,6 +50,15 @@ export const EditorScene: React.FC<EditorSceneProps> = ({
         camera.layers.enable(0);
         if (overlay) camera.layers.enable(2);
         if (gridlines) camera.layers.enable(overlay ? 4 : 3);
+        
+        scene.traverse(mesh => {
+            mesh.visible = true;
+        });
+
+        elementToggles.forEach(element => {
+            scene.getObjectByName(element)!.visible = false;
+            scene.getObjectByName(`overlay:${element}`)!.visible = false;
+        });
     }, [initialized]);
 
     function onCreated(root: RootState) {
@@ -114,6 +123,7 @@ export const EditorScene: React.FC<EditorSceneProps> = ({
     return (
         <Canvas
             ref={canvasRef}
+            camera={{ fov: 75, near: 0.1, far: 1000, position: [0, 0, 30] }}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
             onMouseUp={onMouseUp}

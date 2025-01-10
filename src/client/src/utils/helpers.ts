@@ -2,13 +2,25 @@ import {Skin} from "../models/skin.ts";
 import {colord, extend, RgbaColor} from "colord";
 import labPlugin from "colord/plugins/mix";
 import React from "react";
+import { useToolContext } from "../stores.ts";
 
 extend([labPlugin]);
 
+/**
+ * Returns an RGBA array subsection of width `w` and height `h` at (`x`, `y`) from source `skin`.
+ * 
+ * @param skin source skin
+ * @param x subsection offset x
+ * @param y subsection offset y
+ * @param w subsection width
+ * @param h subsection height
+ * @returns 
+ */
 export function getSkinSubsection(
     skin: Skin,
     x: number, y: number,
-    w: number, h: number): Uint8ClampedArray {
+    w: number, h: number
+): Uint8ClampedArray {
     const w1 = skin.model.texture_size[0];
 
     const subsection = new Uint8ClampedArray(w * h * 4);
@@ -34,7 +46,15 @@ export function getSkinSubsection(
     return subsection;
 }
 
-export function getFaviconDataUrl(
+/**
+ * Returns a data URL of an image defined in `rgbaArray` of width `width` and height `height`.
+ * 
+ * @param rgbaArray array of 8 bit RGBA values
+ * @param width source width
+ * @param height source height
+ * @returns 
+ */
+export function rgbaArrayToDataUrl(
     rgbaArray: Uint8ClampedArray,
     width: number, height: number,
 ): string {
@@ -50,6 +70,12 @@ export function getFaviconDataUrl(
     return canvas.toDataURL("image/png");
 }
 
+/**
+ * Finds a highly contrasting color to the initial color `rgba`.
+ * 
+ * @param rgba initial color
+ * @returns a color optimized for visibility on the initial color
+ */
 export function getContrastingColor(rgba: RgbaColor) {
     const color = colord(rgba).alpha(1).invert();
     const { s, v } = color.toHsv();
@@ -80,4 +106,23 @@ export function noContextMenu(event: React.MouseEvent) {
     });
 
     event.target?.dispatchEvent(rightClickEvent);
+}
+
+/**
+ * Gets the value of a tool's property.
+ * 
+ * @param tool tool id
+ * @param prop property id
+ * @returns property value
+ */
+export function getToolProp(tool: string, prop: string): any {
+    return useToolContext.getState().toolProps[tool][prop];
+}
+
+export function isMacOS(): boolean {
+    return /mac/i.test(navigator.userAgent);
+}
+
+export function getCtrlPrefix(): string {
+    return isMacOS() ? "⌘" : "Ctrl+";
 }

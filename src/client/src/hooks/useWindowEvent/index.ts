@@ -1,1 +1,1 @@
-export * from "./useWindowEvent.tsx";
+export * from "./useWindowEvent";
