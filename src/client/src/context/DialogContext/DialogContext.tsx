@@ -1,5 +1,6 @@
-import React, { createContext, useState, useRef } from "react";
+import React, { createContext, useState } from "react";
 import ReactDOM from "react-dom";
+import { useWindowEvent } from "../../hooks/useWindowEvent";
 
 export const DialogContext = createContext({
     showDialog: (dialog: React.ReactNode) => {},
@@ -8,30 +9,24 @@ export const DialogContext = createContext({
 
 export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [activeDialog, setActiveDialog] = useState<React.ReactNode>();
-    const dialogRef = useRef<HTMLDivElement>(null);
 
     function showDialog(dialog: React.ReactNode) {
         setActiveDialog(dialog);
     }
+
     function hideDialog() {
         setActiveDialog(undefined);
     }
+
+    useWindowEvent("resize", () => {
+        hideDialog();
+    })
 
     return (
         <DialogContext.Provider value={{ showDialog, hideDialog }}>
         {children}
         {activeDialog && ReactDOM.createPortal(
-            <div className="dialog-container" onClick={hideDialog}>
-                <div 
-                    ref={dialogRef}
-                    className="dialog"
-                    onClick={e => e.stopPropagation()}
-                    onKeyDown={e => e.stopPropagation()}
-                >
-                    {activeDialog}
-                </div>
-            </div>,
-            document.body,
+            activeDialog, document.body,
         )}
         </DialogContext.Provider>
     );

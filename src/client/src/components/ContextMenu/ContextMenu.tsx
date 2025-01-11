@@ -1,55 +1,73 @@
-import "./style.css";
+import "./style.scss";
 
-import React, {useRef, useState} from "react";
-import {useWindowEvent} from "../../hooks/useWindowEvent";
-import {noContextMenu} from "../../utils/helpers.ts";
-import {Menu} from "../Menu";
+import React from "react";
+
+import { noContextMenu } from "../../utils/helpers.ts";
+import { Menu } from "../Menu";
+import { useDialog } from "../../hooks/useDialog/useDialog.tsx";
+import { useWindowEvent } from "../../hooks/useWindowEvent/useWindowEvent.tsx";
 
 type ContextMenuProps = {
+    menu: React.ReactNode,
     children: React.ReactNode,
 };
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({
-    children
+    menu, children
 }) => {
-    const [visible, setVisible] = useState<boolean>(false);
-    const [pos, setPos] = useState({ x: 0, y: 0 });
+    const { showDialog } = useDialog();
 
-    const divRef = useRef<HTMLDivElement | null>(null);
+    function onContextMenu(event: React.MouseEvent) {
+        event.preventDefault();
+        const x = Math.floor(event.clientX / 2) * 2;
+        const y = Math.floor(event.clientY / 2) * 2;
+
+        showDialog(
+            <ContextMenuDialog menu={menu} x={x} y={y} />
+        );
+    };
+
+    return (
+        <React.Fragment>
+            <div onContextMenu={onContextMenu} style={{display: "contents"}}>
+                {children}
+            </div>
+        </React.Fragment>
+    )
+};
+
+type ContextMenuDialogProps = {
+    menu: React.ReactNode,
+    x: number,
+    y: number,
+}
+
+const ContextMenuDialog: React.FC<ContextMenuDialogProps> = ({ menu, x, y }) => {
+    const { hideDialog } = useDialog();
 
     function onClick(event: React.MouseEvent) {
         event.stopPropagation();
     }
 
-    useWindowEvent("contextmenu", (event: MouseEvent) => {
-        event.preventDefault();
-        setVisible(true);
-        const x = Math.floor(event.clientX / 2) * 2;
-        const y = Math.floor(event.clientY / 2) * 2;
-        setPos({ x, y });
-    });
-
     useWindowEvent("click", () => {
-        setVisible(false);
+        hideDialog();
     });
 
     const style = {
-        left: `${pos.x}px`,
-        top: `${pos.y}px`,
-        display: visible ? "block" : "none",
+        left: `${x}px`,
+        top: `${y}px`,
     } as React.CSSProperties;
 
     return (
         <div
-            ref={divRef}
             className="context-menu"
             style={style}
             onClick={onClick}
             onContextMenu={noContextMenu}
         >
             <Menu>
-                {children}
+                {menu}
             </Menu>
         </div>
-    )
+    );
 };

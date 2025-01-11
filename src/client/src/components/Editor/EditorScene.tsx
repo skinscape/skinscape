@@ -1,14 +1,13 @@
-import React, {MutableRefObject, useEffect, useMemo, useReducer, useRef, useState} from "react";
+import React, {MutableRefObject, useEffect, useRef, useState} from "react";
 
 import * as THREE from "three";
 
 import {MutableSkin} from "../../models/skin.ts";
 import {DirectionalLight} from "three";
-import {Canvas, createRoot, events, extend, RootState, useFrame, useThree} from "@react-three/fiber";
+import {Canvas, extend, RootState, useThree} from "@react-three/fiber";
 // @ts-ignore
 import {OrbitControls as OrbitControlsClass} from "three/examples/jsm/controls/OrbitControls";
-import {useWindowEvent} from "../../hooks/useWindowEvent";
-import {useColorContext, useEditorContext} from "../../stores.ts";
+import {useColorContext, useEditorViewContext} from "../../stores.ts";
 import {useSubscribing} from "../../hooks/useSubscribing";
 import {getActiveTool} from "../../models/tool.ts";
 import {OrbitControls} from "@react-three/drei";
@@ -30,17 +29,7 @@ export const EditorScene: React.FC<EditorSceneProps> = ({
     const [initialized, setInitialized] = useState<boolean>(false);
     let mouseDown = false;
 
-    useWindowEvent("keydown", (event: KeyboardEvent) => {
-        const {
-            overlay, setOverlay,
-            gridlines, setGridlines
-        } = useEditorContext.getState();
-
-        if (event.key === "g") setGridlines(!gridlines);
-        if (event.key === "o") setOverlay(!overlay);
-    });
-
-    useSubscribing(useEditorContext, ({ overlay, gridlines, elementToggles }) => {
+    useSubscribing(useEditorViewContext, ({ overlay, gridlines, elementToggles }) => {
         if (!threeRef.current) return;
         const { camera, raycaster, scene } = threeRef.current;
 

@@ -39,16 +39,17 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 type MenuItemToggleProps = {
     label: string,
     shortcut?: string,
+    enabled?: boolean,
 
     toggled: boolean,
     setToggled(toggled: boolean): void,
 };
 
 export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
-    label, shortcut, toggled, setToggled
+    label, shortcut, enabled, toggled, setToggled
 }) => {
     return (
-        <div className="menu-item" onClick={() => setToggled(!toggled)}>
+        <div className={enabled == false ? "menu-item disabled" : "menu-item"} onClick={() => setToggled(!toggled)}>
             <div>
                 {toggled ? <div className="toggle-indicator-on"></div> : <div className="toggle-indicator-off"></div>}
                 <p className="text">{label}</p>
@@ -60,11 +61,12 @@ export const MenuItemToggle: React.FC<MenuItemToggleProps> = ({
 
 type MenuItemDropdownProps = {
     label: string,
+    enabled?: boolean,
     children: React.ReactNode,
 };
 
 export const MenuItemDropdown: React.FC<MenuItemDropdownProps> = ({
-    label: text, children
+    label, enabled, children
 }) => {
     const [visible, setVisible] = useState<boolean>(false);
     const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -72,7 +74,7 @@ export const MenuItemDropdown: React.FC<MenuItemDropdownProps> = ({
     const divRef = useRef<HTMLDivElement | null>(null);
 
     function onMouseOver() {
-        if (!divRef.current) return;
+        if (!divRef.current || enabled == false) return;
 
         setPos({ x: divRef.current.offsetWidth, y: divRef.current.offsetTop - 4 });
         setVisible(true);
@@ -91,11 +93,11 @@ export const MenuItemDropdown: React.FC<MenuItemDropdownProps> = ({
     return (
         <div
             ref={divRef}
-            className="menu-item menu-item-sub"
+            className={enabled == false ? "menu-item menu-item-sub disabled" : "menu-item menu-item-sub"}
             onMouseOver={onMouseOver}
             onMouseLeave={onMouseLeave}
         >
-            <p className="text">{text}</p>
+            <p className="text">{label}</p>
             <div style={style} onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>
                 <Menu>
                     {children}

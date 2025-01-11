@@ -20,7 +20,7 @@ export const Menubar: React.FC<MenubarProps> = ({
 };
 
 type MenubarItemProps = {
-    label: string,
+    label: React.ReactNode,
     children: React.ReactNode,
 }
 
@@ -35,7 +35,7 @@ export const MenubarItem: React.FC<MenubarItemProps> = ({
     function onMouseOver() {
         if (!divRef.current) return;
 
-        setPos({ x: divRef.current.offsetLeft - 4, y: divRef.current.offsetTop + divRef.current.offsetHeight });
+        setPos({ x: divRef.current.offsetLeft - 4, y: divRef.current.offsetTop + divRef.current.offsetHeight - 4 });
         setVisible(true);
     }
 

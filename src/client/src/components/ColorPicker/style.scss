@@ -1,4 +1,4 @@
-#cursor-overlay {
+#color-cursor-overlay {
     position: absolute;
     inset: 0;
     display: none;
@@ -32,15 +32,15 @@
     outline: none;
     user-select: none;
     cursor: url('../../assets/icons/eyedropper@2x.png') 0 23, auto;
-}
 
-.color-range:before {
-    content: "";
-    position: absolute;
-    left: 0; right: 0;
-    top: 0; bottom: 0;
-    background: repeating-linear-gradient(#ffffff05, #ffffff05 2px, #00000000 2px, #00000000 4px),
-    repeating-linear-gradient(to right, #ffffff05, #ffffff05 2px, #00000000 2px, #00000000 4px);
+    &:before {
+        content: "";
+        position: absolute;
+        left: 0; right: 0;
+        top: 0; bottom: 0;
+        background: repeating-linear-gradient(#ffffff05, #ffffff05 2px, #00000000 2px, #00000000 4px),
+        repeating-linear-gradient(to right, #ffffff05, #ffffff05 2px, #00000000 2px, #00000000 4px);
+    }
 }
 
 .color-indicator {
@@ -64,13 +64,13 @@
     background: linear-gradient(to right, #ff0000, #ffff00 17.2%, #ffff00 18.2%, #00ff00 33.3%, #00ffff 49.5%, #00ffff 51.5%,
     #0000ff 67.7%, #ff00ff 83.3%, #ff0000);
     cursor: url('../../assets/icons/eyedropper@2x.png') 0 23, auto;
-}
-
-.color-slider:before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(to right, #ffffff0f, #ffffff0f 2px, #00000000 2px, #00000000 4px);
+    
+    &:before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(to right, #ffffff0f, #ffffff0f 2px, #00000000 2px, #00000000 4px);
+    }
 }
 
 .color-alpha {
@@ -79,13 +79,13 @@
     width: 100%;
     background: repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 50% / 20px 20px;
     cursor: url('../../assets/icons/eyedropper@2x.png') 0 23, auto;
-}
 
-.color-alpha:before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to right, #ffffff00, var(--color));
+    &:before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, #ffffff00, var(--color));
+    }
 }
 
 .color-button {
@@ -96,42 +96,42 @@
     height: var(--height);
     white-space: nowrap;
     background: repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 50% / 20px 20px;
-}
 
-.color-button:before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--color);
-}
+    &:before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--color);
+    }
 
-.color-button input, span {
-    z-index: 1;
-    padding: 0;
-    overflow: hidden;
-    font-family: var(--font-small), serif;
-    font-size: 16px;
-    color: var(--inverted) !important;
-    height: 100%;
-    cursor: url('../../assets/icons/input@2x.png') 12 12, auto;
-}
+    span {
+        user-select: none;
+        display: inline-flex;
+        align-items: center;
+    }
 
-.color-button span {
-    user-select: none;
-    display: inline-flex;
-    align-items: center;
-}
+    input {
+        -webkit-appearance: none;
+        appearance: none;
+        outline: none;
+        border: none;
+        background: none;
+        width: 85px;
 
-.color-button input {
-    -webkit-appearance: none;
-    appearance: none;
-    outline: none;
-    border: none;
-    background: none;
-    width: 85px;
-}
+        &::selection {
+            background: var(--inverted);
+            color: var(--solid);
+        }
+    }
 
-.color-button input::selection {
-    background: var(--inverted);
-    color: var(--solid);
+    input, span {
+        z-index: 1;
+        padding: 0;
+        overflow: hidden;
+        font-family: var(--font-small), serif;
+        font-size: 16px;
+        color: var(--inverted) !important;
+        height: 100%;
+        cursor: url('../../assets/icons/input@2x.png') 12 12, auto;
+    }
 }

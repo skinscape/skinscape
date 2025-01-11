@@ -3,12 +3,15 @@
     flex-direction: column;
     width: 34px;
     gap: 12px;
-}
 
-.editor-sidebar:has(.picker-container) {
-    flex: 1;
-    min-width: 68px;
-    max-width: 120px;
+    margin-top: 28px;
+
+    &:has(.picker-container) {
+        flex: 1;
+        min-width: 68px;
+        max-width: 120px;
+        margin-top: 0;
+    }
 }
 
 .palette-container {
@@ -23,25 +26,31 @@
 .editor-center {
     flex: 5;
     display: flex;
+    flex-direction: column;
     
     min-width: 0;
     min-height: 0;
 }
 
-@media (max-width: 600px) {
-    .editor-sidebar {
-        flex-direction: row-reverse;
-        max-width: 600px !important;
-        width: 100%;
-    }
+.editor-tabs {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+    padding: 2px 2px 0 2px;
+    margin: 0 8px;
+}
 
-    .picker-container {
-        height: 100%;
-        width: 25%;
-    }
+.editor-tab {
+    background: var(--secondary-color);
+    display: flex;
+    gap: 10px;
+    padding: 4px;
+    white-space: nowrap;
 
-    .palette-container {
-        width: 75%;
+    box-shadow: 2px 0 0 0 var(--border-dark), -2px 0 0 0 var(--border-dark),0 -2px 0 0 var(--border-dark);
+
+    &:not(.active) {
+        background-color: var(--border-color);
     }
 }
 

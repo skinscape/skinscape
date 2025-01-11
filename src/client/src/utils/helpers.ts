@@ -1,10 +1,15 @@
-import {Skin} from "../models/skin.ts";
-import {colord, extend, RgbaColor} from "colord";
-import labPlugin from "colord/plugins/mix";
 import React from "react";
+
+import { colord, extend, RgbaColor } from "colord";
+import labPlugin from "colord/plugins/mix";
+
+import { Skin } from "../models/skin.ts";
 import { useToolContext } from "../stores.ts";
 
 extend([labPlugin]);
+
+export const GITHUB_URL = "https://github.com/skinscape/skinscape";
+export const DISCORD_URL = "https://discord.gg/HdVWtK7m3w";
 
 /**
  * Returns an RGBA array subsection of width `w` and height `h` at (`x`, `y`) from source `skin`.
@@ -125,4 +130,12 @@ export function isMacOS(): boolean {
 
 export function getCtrlPrefix(): string {
     return isMacOS() ? "⌘" : "Ctrl+";
+}
+
+export function classNames(names: {
+    [key: string]: boolean
+}): string {
+    return Object.keys(names).map(key => {
+        if (names[key]) return key;
+    }).filter(it => it != undefined).join(" ");
 }

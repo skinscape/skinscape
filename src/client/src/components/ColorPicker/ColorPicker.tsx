@@ -1,4 +1,4 @@
-import "./style.css";
+import "./style.scss";
 
 import React from "react";
 import {Range} from "./Range.tsx";
@@ -9,7 +9,7 @@ import {Button} from "./Button.tsx";
 export const ColorPicker: React.FC = () => {
     return (
         <React.Fragment>
-            <div id="cursor-overlay"></div>
+            <div id="color-cursor-overlay"></div>
 
             <div className="color-picker">
                 <div className="color-picker-inner border-small">
@@ -20,5 +20,5 @@ export const ColorPicker: React.FC = () => {
                 <Button />
             </div>
         </React.Fragment>
-    )
+    );
 }

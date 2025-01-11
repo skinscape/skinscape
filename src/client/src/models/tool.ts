@@ -123,9 +123,7 @@ export class EyedropperHandler extends ToolHandler {
         const { setActiveTool } = useToolContext.getState();
         const { setRgba } = useColorContext.getState();
 
-        let c = skin.activeLayer.getPixel(x, y);
-        c.a /= 255;
-        setRgba(c);
+        setRgba(skin.activeLayer.getPixel(x, y));
         if (this.previous) setActiveTool(this.previous)
     }
 

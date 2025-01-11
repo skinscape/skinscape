@@ -16,7 +16,7 @@ export const Alpha: React.FC = () => {
     function onMouseDown(event: React.MouseEvent) {
         button.current = event.button;
         if (button.current !== -1) {
-            document.getElementById("cursor-overlay")!.style.display = "block";
+            document.getElementById("color-cursor-overlay")!.style.display = "block";
             updateHue(event.clientX);
         }
     }
@@ -35,7 +35,7 @@ export const Alpha: React.FC = () => {
 
     useWindowEvent("mouseup", (event: MouseEvent) => {
         if (button.current === event.button) {
-            document.getElementById("cursor-overlay")!.style.display = "none";
+            document.getElementById("color-cursor-overlay")!.style.display = "none";
             button.current = -1;
         }
     });

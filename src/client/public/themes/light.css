@@ -1,22 +1,22 @@
 :root {
-    --main-color: #e4e5f1;
+    --main-color: #ededf3;
     --secondary-color: #e4e5f1;
     --inlay-color: #bababc;
     --scene-color: var(--inlay-color);
     --error-color: #ff4444;
 
-    --primary-text: #000000;
-    --secondary-text: #4e4e4e;
-    --link-text: #4393de;
+    --text-primary: #000000;
+    --text-secondary: #4e4e4e;
+    --text-link: #4393de;
 
     --icon-color: #000000;
 
     --status-color: #4393de;
 
-    --button-color: var(--main-color);
-    --button-hover: var(--main-color);
+    --button-color: var(--secondary-color);
+    --button-hover: var(--secondary-color);
     --button-select: #9eb8ff;
-    --button-outline-hover: #ffffff;
+    --button-outline-hover: #777777;
     --button-outline-select: #00258a;
 
     --border-dark: #000000;
@@ -24,21 +24,12 @@
     --border-light: var(--secondary-color);
 }
 
-.logo {
-    --border-dark: #000000;
-    color: #79b1e5;
-}
-
-.status-text {
-    color: #ffffff !important;
-}
-
-.palette, .scene {
+.palette, .editor-scene {
     background: repeating-conic-gradient(var(--inlay-color) 0% 25%, #b7b7b7 0% 50%) 50% / 32px 32px !important;
 }
 
-.menu:hover {
-    background: #f1f8a9;
+.menu-item:not(.disabled):hover, .menubar-item:hover {
+    background-color: #f1f8a9;
 }
 
 .button.active {

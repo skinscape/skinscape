@@ -15,6 +15,7 @@ export const Range: React.FC = () => {
 
     function onMouseDown(event: React.MouseEvent) {
         button.current = event.button;
+        document.getElementById("color-cursor-overlay")!.style.display = "block";
         updateHue(event.clientX, event.clientY);
     }
 
@@ -35,7 +36,7 @@ export const Range: React.FC = () => {
 
     useWindowEvent("mouseup", (event: MouseEvent) => {
         if (button.current === event.button) {
-            document.getElementById("cursor-overlay")!.style.display = "none";
+            document.getElementById("color-cursor-overlay")!.style.display = "none";
             button.current = -1;
         }
     });

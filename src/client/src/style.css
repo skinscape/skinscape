@@ -18,6 +18,9 @@ body, #root {
     inset: 0;
     font-family: var(--font-small), serif;
     color: var(--text-primary);
+
+    --font-small: SkinscapeSmall;
+    --font-large: SkinscapeLarge;
 }
 
 * {

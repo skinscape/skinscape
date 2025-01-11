@@ -1,9 +1,8 @@
-import { create, StateCreator } from "zustand";
+import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { colord, HsvaColor, RgbaColor } from "colord";
 import { EyedropperHandler, getTool, ToolProps } from "./models/tool.ts";
-import { MutableSkin } from './models/skin.ts';
-import { Models } from './models/model.ts';
+import { Editor } from "./models/editor.ts";
 
 type ColorState = {
     rgba: RgbaColor,
@@ -27,7 +26,7 @@ export const useColorContext = create<ColorState>()(
             }),
         }),
         {
-            name: 'colorContext',
+            name: "colorContext",
         },
     ),
 );
@@ -57,12 +56,12 @@ export const useToolContext = create<ToolState>()(
             setToolProps: (toolProps: ToolProps) => set({ toolProps }),
         }),
         {
-            name: 'toolContext',
+            name: "toolContext",
         },
     ),
 );
 
-type EditorState = {
+type EditorViewState = {
     overlay: boolean,
     setOverlay: (overlay: boolean) => void,
     gridlines: boolean,
@@ -71,7 +70,7 @@ type EditorState = {
     setElementToggles: (elementToggles: Array<string>) => void,
 };
 
-export const useEditorContext = create<EditorState>()(
+export const useEditorViewContext = create<EditorViewState>()(
     persist(
         (set, get) => ({
             overlay: false,
@@ -82,7 +81,7 @@ export const useEditorContext = create<EditorState>()(
             setElementToggles: (elementToggles: Array<string>) => set({ elementToggles }),
         }),
         {
-            name: 'editorContext',
+            name: "editorViewContext",
         },
     ),
 );
@@ -99,40 +98,48 @@ export const useSettingsContext = create<SettingsState>()(
             setTheme: (theme: string) => set({ theme }),
         }),
         {
-            name: 'settingsContext',
+            name: "settingsContext",
         },
     ),
 );
 
-type SkinState = {
-    skins: Array<MutableSkin>,
-    setSkins: (skins: Array<MutableSkin>) => void,
+type EditorState = {
+    editors: Array<Editor>,
+    setEditors: (editors: Array<Editor>) => void,
+    activeEditor: number,
+    setActiveEditor: (activeEditor: number) => void,
 };
 
-const skinStorage = createJSONStorage(() => localStorage, {
+const editorStorage = createJSONStorage(() => localStorage, {
     reviver: (key: string, value: any) => {
-        if (key == "skins") {
-            return value.map((it: any) => MutableSkin.fromJSON(it));
+        if (key == "editors") {
+            return value.map((it: any) => Editor.fromJSON(it));
         }
         return value;
-    },
-    replacer: (key: string, value: any) => {
-        if (key == "skins") {
-            return value.map((it: any) => it.toJSON());
-        }
-        return value;
-    },
+    }
 });
 
-export const useSkinContext = create<SkinState>()(
+export const useEditorContext = create<EditorState>()(
     persist(
         (set, get) => ({
-            skins: [new MutableSkin(Models.alex64)],
-            setSkins: (skins: Array<MutableSkin>) => set({ skins })
+            editors: [new Editor()],
+            setEditors: (editors: Array<Editor>) => {
+                let { activeEditor } = get();
+                const filtered = editors.filter(editor => editor.skins.length > 0);
+                
+                if (filtered.length == 0) {
+                    filtered.push(new Editor());
+                }
+                if (activeEditor >= filtered.length) activeEditor = 0;
+
+                set({ editors: filtered, activeEditor });
+            },
+            activeEditor: 0,
+            setActiveEditor: (activeEditor: number) => set({ activeEditor }),
         }),
         {
-            name: 'skinContext',
-            storage: skinStorage,
+            name: "editorContext",
+            storage: editorStorage,
         },
     ),
 );

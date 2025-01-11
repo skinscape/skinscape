@@ -135,6 +135,11 @@ export class MutableSkin extends Skin {
         }
     }
 
+    copy(): MutableSkin {
+        // doesn't actually stringify/parse so this isn't even hacky
+        return MutableSkin.fromJSON(this.toJSON());
+    }
+
     setTexture(texture: Texture) {
         this.data.set(Skin.possiblyResize(this.model, texture).data); // Will keep shape
         this.layers = [new Layer(this, "default")];
@@ -222,7 +227,7 @@ export class Layer {
         this.uuid = crypto.randomUUID();
     }
 
-    static fromJSON(json: any, skin: MutableSkin) {
+    static fromJSON(json: any, skin: MutableSkin): Layer {
         const layer = new Layer(skin, json.name);
         layer.data.set(json.data);
         layer.isActive = json.isActive;
@@ -230,7 +235,7 @@ export class Layer {
         return layer;
     }
 
-    toJSON() {
+    toJSON(): any {
         return {
             data: Array.from(this.data),
             name: this.name,
@@ -242,9 +247,10 @@ export class Layer {
     /**
      * Gets the pixel at coords `(x, y)`.
      */
-    getPixel(x: number, y: number) {
+    getPixel(x: number, y: number): RgbaColor {
         const pos = (x * 4) + ((y * this.skin.model.texture_size[1] - 1) * 4);
-        return this.getPixelByPos(pos);
+        const c = this.getPixelByPos(pos);
+        return { r: c.r, g: c.g, b: c.b, a: c.a / 255 };
     }
 
     /**
@@ -252,7 +258,7 @@ export class Layer {
      *
      * @param pos offset in texture buffer
      */
-    getPixelByPos(pos: number) {
+    getPixelByPos(pos: number): RgbaColor {
         return {
             r: this.data[pos], g: this.data[pos + 1],
             b: this.data[pos + 2], a: this.data[pos + 3],

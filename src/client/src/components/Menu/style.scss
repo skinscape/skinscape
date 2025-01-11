@@ -37,8 +37,13 @@
     text-wrap: nowrap;
   }
   
-  &.disabled p {
-    color: var(--text-secondary);
+  &.disabled {
+    p {
+      color: var(--text-secondary);
+    }
+    .toggle-indicator-on, .toggle-indicator-off {
+      --text-primary: var(--text-secondary);
+    }
   }
 
   kbd {
