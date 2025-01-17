@@ -1,10 +1,16 @@
 import React, {useEffect, useRef, useState} from "react";
-import {colord} from "colord";
+import { colord, RgbaColor } from "colord";
 import {useColorContext} from "../../stores.ts";
 import {getContrastingColor, noContextMenu} from "../../utils/helpers.ts";
 
-export const Button: React.FC = () => {
-    const { rgba, setRgba } = useColorContext();
+type ColorButtonProps = {
+    rgba: RgbaColor,
+    setRgba: (rgba: RgbaColor) => void,
+};
+
+export const ColorButton: React.FC<ColorButtonProps> = ({
+    rgba, setRgba
+}) => {
     const [inputValue, setInputValue] = useState("");
     const inputRef = useRef<HTMLInputElement>(null);
 

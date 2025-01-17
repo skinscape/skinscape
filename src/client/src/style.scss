@@ -1,0 +1,92 @@
+@font-face {
+  font-family: "Silkscreen";
+  src: url("./assets/fonts/slkscr.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "SkinscapeLarge";
+  src: url("./assets/fonts/skinscape-large.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "SkinscapeSmall";
+  src: url("./assets/fonts/skinscape-small.ttf") format("truetype");
+}
+
+body, #root {
+  position: absolute;
+  inset: 0;
+  font-family: var(--font-small), serif;
+  color: var(--text-primary);
+
+  --font-small: SkinscapeSmall;
+  --font-large: SkinscapeLarge;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+
+  image-rendering: pixelated;
+
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
+  user-select: none;
+}
+
+.border {
+  margin: 6px;
+  box-shadow:
+          2px 0 0 0 var(--border-dark),
+          -2px 0 0 0 var(--border-dark),
+          0 2px 0 0 var(--border-dark),
+          0 -2px 0 0 var(--border-dark),
+          0 0 0 2px var(--border-light),
+          4px 0 0 0 var(--border-light),
+          -4px 0 0 0 var(--border-light),
+          0 4px 0 0 var(--border-light),
+          0 -4px 0 0 var(--border-color),
+          0 0 0 4px var(--border-dark),
+          -4px 0 0 2px var(--border-dark),
+          4px 0 0 2px var(--border-dark),
+          0 4px 0 2px var(--border-dark),
+          0 -4px 0 2px var(--border-dark);
+}
+
+.border-small {
+  margin: 4px;
+  box-shadow:
+          2px 0 0 0 var(--border-dark),
+          -2px 0 0 0 var(--border-dark),
+          0 2px 0 0 var(--border-dark),
+          0 -2px 0 0 var(--border-dark),
+          0 0 0 2px var(--border-light),
+          4px 0 0 0 var(--border-light),
+          -4px 0 0 0 var(--border-light),
+          0 4px 0 0 var(--border-light),
+          0 -4px 0 0 var(--border-color);
+}
+
+hr {
+  border: none;
+  margin: 4px 0;
+  box-shadow: 0 0 0 1px var(--border-light);
+}
+
+i {
+  font-style: normal;
+  color: var(--text-secondary);
+}
+
+a {
+  color: var(--text-link);
+  text-decoration: none;
+
+  &:visited {
+    color: var(--text-link);
+  }
+  &:hover {
+    color: var(--text-link-hover, var(--text-link));
+  }
+}

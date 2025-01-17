@@ -1,0 +1,14 @@
+.color-value-slider {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to right, #000000, #ffffff);
+  cursor: url('../../assets/icons/eyedropper@2x.png') 0 23, auto;
+
+  &:before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(to right, #ffffff0f, #ffffff0f 2px, #00000000 2px, #00000000 4px);
+  }
+}

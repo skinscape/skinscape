@@ -23,6 +23,11 @@
     position: relative;
 }
 
+.color-picker-hue {
+    width: 100%;
+    height: 15%;
+}
+
 .color-range {
     height: 70%;
     width: 100%;
@@ -40,36 +45,6 @@
         top: 0; bottom: 0;
         background: repeating-linear-gradient(#ffffff05, #ffffff05 2px, #00000000 2px, #00000000 4px),
         repeating-linear-gradient(to right, #ffffff05, #ffffff05 2px, #00000000 2px, #00000000 4px);
-    }
-}
-
-.color-indicator {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-
-    pointer-events: none;
-    z-index: 1;
-
-    box-shadow: 2px 0 #000, -2px 0 #000, 0 2px #000, 0 -2px #000,
-    2px 2px #00000060, -2px 2px #00000060, 2px -2px #00000060, -2px -2px #00000060;
-    filter: invert(1);
-    mix-blend-mode: difference;
-}
-
-.color-slider {
-    position: relative;
-    height: 15%;
-    width: 100%;
-    background: linear-gradient(to right, #ff0000, #ffff00 17.2%, #ffff00 18.2%, #00ff00 33.3%, #00ffff 49.5%, #00ffff 51.5%,
-    #0000ff 67.7%, #ff00ff 83.3%, #ff0000);
-    cursor: url('../../assets/icons/eyedropper@2x.png') 0 23, auto;
-    
-    &:before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(to right, #ffffff0f, #ffffff0f 2px, #00000000 2px, #00000000 4px);
     }
 }
 

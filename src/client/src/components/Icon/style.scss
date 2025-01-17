@@ -1,0 +1,8 @@
+.icon {
+  width: 10px;
+  height: 10px;
+
+  mask-size: cover;
+  mask-mode: luminance;
+  background-color: var(--icon-color);
+}

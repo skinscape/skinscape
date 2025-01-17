@@ -3,7 +3,7 @@ import React from "react";
 import { colord, extend, RgbaColor } from "colord";
 import labPlugin from "colord/plugins/mix";
 
-import { Skin } from "../models/skin.ts";
+import { Skin, Texture } from "../models/skin.ts";
 import { useToolContext } from "../stores.ts";
 
 extend([labPlugin]);
@@ -26,7 +26,9 @@ export function getSkinSubsection(
     x: number, y: number,
     w: number, h: number
 ): Uint8ClampedArray {
-    const w1 = skin.model.texture_size[0];
+    const texture = skin.getTexture();
+    const data = texture.data;
+    const w1 = texture.size[0];
 
     const subsection = new Uint8ClampedArray(w * h * 4);
 
@@ -37,13 +39,13 @@ export function getSkinSubsection(
 
             // Check if the source coordinates are within bounds
             if (srcX >= 0 && srcX < w1 && srcY >= 0) {
-                const srcIndex = (srcY * w1 + srcX) * 4;
-                const destIndex = (row * w + col) * 4;
+                const srcPos = (srcY * w1 + srcX) * 4;
+                const destPos = (row * w + col) * 4;
 
-                subsection[destIndex] = skin.data[srcIndex];
-                subsection[destIndex + 1] = skin.data[srcIndex + 1];
-                subsection[destIndex + 2] = skin.data[srcIndex + 2];
-                subsection[destIndex + 3] = skin.data[srcIndex + 3];
+                subsection[destPos] = data[srcPos];
+                subsection[destPos + 1] = data[srcPos + 1];
+                subsection[destPos + 2] = data[srcPos + 2];
+                subsection[destPos + 3] = data[srcPos + 3];
             }
         }
     }
@@ -53,23 +55,16 @@ export function getSkinSubsection(
 
 /**
  * Returns a data URL of an image defined in `rgbaArray` of width `width` and height `height`.
- * 
- * @param rgbaArray array of 8 bit RGBA values
- * @param width source width
- * @param height source height
- * @returns 
  */
-export function rgbaArrayToDataUrl(
-    rgbaArray: Uint8ClampedArray,
-    width: number, height: number,
-): string {
+export function textureToDataUrl(texture: Texture): string {
+    const [width, height] = texture.size;
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext('2d')!;
 
     const imageData = ctx.createImageData(width, height);
-    imageData.data.set(rgbaArray);
+    imageData.data.set(texture.data);
     ctx.putImageData(imageData, 0, 0);
 
     return canvas.toDataURL("image/png");

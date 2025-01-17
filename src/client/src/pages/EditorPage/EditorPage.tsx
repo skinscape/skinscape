@@ -3,22 +3,25 @@ import "./style.scss";
 import React from "react";
 
 import * as UPNG from "upng-js";
-import { Editor } from "../../components/Editor";
-import { Toolbar } from "../../components/Toolbar";
-import { MenuItem, MenuItemDropdown, MenuItemToggle } from "../../components/Menu";
-import { Menubar, MenubarItem } from "../../components/Menubar";
-import { useEditorViewContext, useEditorContext } from "../../stores";
-import { Models } from "../../models/model";
-import { MutableSkin } from "../../models/skin";
-import { InputDialog } from "./InputDialog";
-import { useDialog } from "../../hooks/useDialog/useDialog";
-import { DISCORD_URL, GITHUB_URL, rgbaArrayToDataUrl } from "../../utils/helpers";
-import { useDocumentEvent } from "../../hooks/useDocumentEvent/useDocumentEvent";
+import {Editor} from "../../components/Editor";
+import {Toolbar} from "../../components/Toolbar";
+import {MenuItem, MenuItemDropdown, MenuItemToggle} from "../../components/Menu";
+import {Menubar, MenubarItem} from "../../components/Menubar";
+import {useEditorContext, useEditorViewContext} from "../../stores";
+import {Models} from "../../models/model";
+import {MutableSkin} from "../../models/skin";
+import {InputDialog} from "./InputDialog";
+import {useDialog} from "../../hooks/useDialog";
+import {DISCORD_URL, GITHUB_URL, textureToDataUrl} from "../../utils/helpers";
+import {useDocumentEvent} from "../../hooks/useDocumentEvent";
 
 import logo from "../../assets/icons/logo.png";
-import { useEditorKeybinds } from "./keybinds";
-import { useActiveEditor } from "../../hooks/useActiveEditor";
-import { useShallow } from "zustand/shallow";
+import {useEditorKeybinds} from "./keybinds";
+import {useActiveEditor} from "../../hooks/useActiveEditor";
+import {useShallow} from "zustand/shallow";
+import {AboutDialog} from "./AboutDialog";
+import {VERSION} from "../../utils/env.ts";
+import { HueSaturationDialog } from "./HueSaturationDialog.tsx";
 
 export const EditorPage: React.FC = () => {
     useEditorKeybinds();
@@ -76,9 +79,8 @@ const EditorPageMenubar: React.FC = () => {
 
     function downloadSkin() {
         const skin = editor.activeSkin!;
-        const data = skin.data;
-        const [width, height] = skin.model.texture_size;
-        const dataUrl = rgbaArrayToDataUrl(data, width, height);
+        const texture = skin.getTexture();
+        const dataUrl = textureToDataUrl(texture);
 
         const element = document.createElement("a");
         element.href = dataUrl;
@@ -106,20 +108,20 @@ const EditorPageMenubar: React.FC = () => {
                 <MenubarItem label={<img src={logo} alt="Logo" width={76} height={18} />}>
                     <MenuItem label="Profile..." enabled={false} />
                     <MenuItem label="Browser..." enabled={false} />
-                    <MenuItem label="About..." />
+                    <MenuItem label="About..." onClick={() => showDialog(<AboutDialog />)} />
                     <MenuItemDropdown label="Community">
                         <MenuItem label="Discord..." onClick={() => window.open(DISCORD_URL, "_blank")?.focus()} />
                         <MenuItem label="Github..." onClick={() => window.open(GITHUB_URL, "_blank")?.focus()} />
                     </MenuItemDropdown>
                     <hr />
-                    <MenuItem label="Version 0.1.5-beta" enabled={false} />
+                    <MenuItem label={`Version ${VERSION}`} enabled={false} />
                 </MenubarItem>
                 <MenubarItem label="File">
                     <MenuItem label="New Skin..." onClick={newSkin} />
                     <MenuItemDropdown label="Import Skin">
                         <MenuItem label="From File..." />
                         <MenuItem label="From Username..." onClick={() => showDialog(
-                            <InputDialog label="Username" maxLength={16} onEnter={setSkinFromUsername} />
+                            <InputDialog title="Username" maxLength={16} onEnter={setSkinFromUsername} />
                         )} />
                     </MenuItemDropdown>
                     <hr />
@@ -137,7 +139,7 @@ const EditorPageMenubar: React.FC = () => {
                     <MenuItem label="Paste" shortcut="Ctrl+V" enabled={editor.isSkinOpen} />
                     <hr />
                     <MenuItem label="Replace Color..." enabled={false && editor.isSkinOpen} />
-                    <MenuItem label="Hue/Saturation..." enabled={false && editor.isSkinOpen} />
+                    <MenuItem label="Hue/Saturation..." onClick={() => showDialog(<HueSaturationDialog />)} enabled={editor.isSkinOpen} />
                     <MenuItem label="Brightness/Contrast..." enabled={false && editor.isSkinOpen} />
                     <hr />
                     <MenuItemToggle label="Enable Symmetry" toggled={false} setToggled={() => {}} enabled={false} />

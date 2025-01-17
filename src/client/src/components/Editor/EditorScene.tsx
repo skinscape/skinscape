@@ -72,8 +72,8 @@ export const EditorScene: React.FC<EditorSceneProps> = ({
         controlsRef.current.enabled = false;
         mouseDown = true;
 
-        const x = Math.ceil(intersects[0].uv!.x * skin.model.texture_size[0]); // Why ceil? IDK LOL
-        const y = Math.floor((1 - intersects[0].uv!.y) * skin.model.texture_size[1]); // Why +2? IDK LOL
+        const x = Math.floor(intersects[0].uv!.x * skin.model.texture_size[0]);
+        const y = Math.floor((1 - intersects[0].uv!.y) * skin.model.texture_size[1]);
 
         getActiveTool().handler.down(skin, x, y, useColorContext.getState().rgba);
     }
@@ -82,7 +82,7 @@ export const EditorScene: React.FC<EditorSceneProps> = ({
         if (!threeRef.current) return;
         const { scene, camera, pointer, raycaster } = threeRef.current;
 
-        skin.tempLayer.clear();
+        skin.getTempLayerByName("hover").clear();
 
         raycaster.setFromCamera(pointer, camera);
 
@@ -90,8 +90,8 @@ export const EditorScene: React.FC<EditorSceneProps> = ({
 
         if (intersects.length === 0) return;
 
-        const x = Math.ceil(intersects[0].uv!.x * skin.model.texture_size[0]); // Why ceil? IDK LOL
-        const y = Math.floor((1 - intersects[0].uv!.y) * skin.model.texture_size[1]); // Why +2? IDK LOL
+        const x = Math.floor(intersects[0].uv!.x * skin.model.texture_size[0]);
+        const y = Math.floor((1 - intersects[0].uv!.y) * skin.model.texture_size[1]);
 
         if (mouseDown) {
             getActiveTool().handler.drag(skin, x, y, useColorContext.getState().rgba)

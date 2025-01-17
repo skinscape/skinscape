@@ -1,13 +1,18 @@
-import React, {useContext, useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import {colord} from "colord";
-import {Indicator} from "./Indicator.tsx";
-import {useWindowEvent} from "../../hooks/useWindowEvent";
-import {useColorContext} from "../../stores.ts";
-import {noContextMenu} from "../../utils/helpers.ts";
+import { colord, HsvaColor } from "colord";
+import { useWindowEvent } from "../../hooks/useWindowEvent";
+import { noContextMenu } from "../../utils/helpers.ts";
+import { Indicator } from "../Indicator";
 
-export const Range: React.FC = () => {
-    const { hsva, setHsva } = useColorContext();
+type ColorRangeProps = {
+    hsva: HsvaColor,
+    setHsva: (hsva: HsvaColor) => void
+};
+
+export const ColorRange: React.FC<ColorRangeProps> = ({
+    hsva, setHsva
+}) => {
     const [pos, setPos] = useState({ x: 0, y: 0 });
 
     let button = useRef(-1);
@@ -34,6 +39,15 @@ export const Range: React.FC = () => {
         setHsva(newHsva);
     }
 
+    function updatePos() {
+        if (!divRef.current) return;
+        const rect = divRef.current.getBoundingClientRect();
+
+        const x = Math.floor(hsva.s / 100 * rect.width);
+        const y = Math.floor(rect.height - hsva.v / 100 * rect.height);
+        setPos({ x, y });
+    }
+
     useWindowEvent("mouseup", (event: MouseEvent) => {
         if (button.current === event.button) {
             document.getElementById("color-cursor-overlay")!.style.display = "none";
@@ -45,14 +59,8 @@ export const Range: React.FC = () => {
         if (button.current !== -1) updateHue(event.clientX, event.clientY);
     }, [hsva]);
 
-    useEffect(() => {
-        if (!divRef.current) return;
-        const rect = divRef.current.getBoundingClientRect();
-
-        const x = Math.floor(hsva.s / 100 * rect.width);
-        const y = Math.floor(rect.height - hsva.v / 100 * rect.height);
-        setPos({ x, y });
-    }, [hsva]);
+    useWindowEvent("resize", updatePos);
+    useEffect(() => updatePos, [hsva]);
 
     const style = {
         "--color": colord({ h: hsva.h, s: 100, v: 100, a: 1 }).toHex(),

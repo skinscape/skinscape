@@ -1,13 +1,18 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import {Indicator} from "./Indicator.tsx";
-import {useWindowEvent} from "../../hooks/useWindowEvent";
-import {colord} from "colord";
-import {useColorContext} from "../../stores.ts";
-import {noContextMenu} from "../../utils/helpers.ts";
+import { useWindowEvent } from "../../hooks/useWindowEvent";
+import { colord, HsvaColor } from "colord";
+import { noContextMenu } from "../../utils/helpers.ts";
+import { Indicator } from "../Indicator";
 
-export const Alpha: React.FC = () => {
-    const { hsva, setHsva } = useColorContext();
+type ColorAlphaProps = {
+    hsva: HsvaColor,
+    setHsva: (hsva: HsvaColor) => void
+};
+
+export const ColorAlpha: React.FC<ColorAlphaProps> = ({
+    hsva, setHsva
+}) => {
     const [pos, setPos] = useState({ x: 0, y: 0 });
 
     const button = useRef(-1);
@@ -33,6 +38,15 @@ export const Alpha: React.FC = () => {
         setHsva(newHsva);
     }
 
+    function updatePos() {
+        if (!divRef.current) return;
+        const rect = divRef.current.getBoundingClientRect();
+
+        const y = rect.height / 2;
+        const x = rect.width * hsva.a;
+        setPos({ x, y });
+    }
+
     useWindowEvent("mouseup", (event: MouseEvent) => {
         if (button.current === event.button) {
             document.getElementById("color-cursor-overlay")!.style.display = "none";
@@ -44,14 +58,8 @@ export const Alpha: React.FC = () => {
         if (button.current !== -1) updateHue(event.clientX);
     }, [hsva]);
 
-    useEffect(() => {
-        if (!divRef.current) return;
-        const rect = divRef.current.getBoundingClientRect();
-
-        const y = rect.height / 2;
-        const x = rect.width * hsva.a;
-        setPos({ x, y });
-    }, [hsva]);
+    useWindowEvent("resize", updatePos);
+    useEffect(() => updatePos, [hsva]);
 
     const style = {
         "--color": colord({ h: hsva.h, s: hsva.s, v: hsva.v, a: 1 }).toHex(),

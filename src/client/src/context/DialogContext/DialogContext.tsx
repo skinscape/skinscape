@@ -18,10 +18,6 @@ export const DialogProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setActiveDialog(undefined);
     }
 
-    useWindowEvent("resize", () => {
-        hideDialog();
-    })
-
     return (
         <DialogContext.Provider value={{ showDialog, hideDialog }}>
         {children}

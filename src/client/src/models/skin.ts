@@ -13,8 +13,10 @@ export type Texture = {
  * Represents a textured model.
  */
 export class Skin {
+
+    protected data: Uint8ClampedArray;
+
     model: Model;
-    data: Uint8ClampedArray;
     texture: DataTexture;
 
     /**
@@ -25,10 +27,17 @@ export class Skin {
      */
     constructor(model: Model, texture: Texture) {
         this.model = model;
-        this.data = Skin.possiblyResize(model, texture).data;
+        this.data = Skin.possiblyResize(model, Skin.flipY(texture)).data;
         this.texture = new DataTexture(this.data, this.model.texture_size[0], this.model.texture_size[1]);
-        this.texture.flipY = true;
+        this.texture.flipY = false;
         this.texture.needsUpdate = true;
+    }
+
+    getTexture(): Texture {
+        return Skin.flipY({
+            data: this.data,
+            size: this.model.texture_size
+        });
     }
 
     protected static possiblyResize(model: Model, texture: Texture): Texture {
@@ -80,6 +89,27 @@ export class Skin {
             data: newTexture,
         };
     }
+
+    protected static flipY(texture: Texture): Texture {
+        const [width, height] = texture.size;
+        const newTexture = new Uint8ClampedArray(texture.data.length);
+        for (let x = 0; x < width; x++) {
+            for (let y = 0; y < height; y++) {
+                const flipY = height - y;
+
+                const srcPos = (y * width + x) * 4;
+                const destPos = (flipY * width + x) * 4;
+                for (let i = 0; i < 4; i++) {
+                    newTexture[destPos * 4 + i] = texture.data[srcPos + i];
+                }
+            }
+        }
+        return {
+            data: newTexture,
+            size: texture.size
+        }
+    }
+
 }
 
 /**
@@ -89,7 +119,7 @@ export class MutableSkin extends Skin {
 
     name: string;
     layers: Array<Layer>;
-    tempLayer: TempLayer;
+    tempLayers: Array<TempLayer>;
     activeLayerId: string;
     history: History;
 
@@ -105,7 +135,10 @@ export class MutableSkin extends Skin {
         this.name = "Untitled Skin";
         this.layers = [new Layer(this, "default")];
         this.layers[0].data = this.data.slice();
-        this.tempLayer = new TempLayer(this);
+        this.tempLayers = [
+            new TempLayer(this, "effect"), // the order here is important, we don't want the hover to be visibly
+            new TempLayer(this, "hover"),  // messed up when an effect is applied.
+        ]
         this.activeLayerId = this.layers[0].uuid;
         this.history = new History(this);
     }
@@ -140,8 +173,20 @@ export class MutableSkin extends Skin {
         return MutableSkin.fromJSON(this.toJSON());
     }
 
+    getLayerByName(name: string): Layer {
+        const layer = this.layers.find(layer => layer.name == name);
+        if (!layer) throw Error(`Cannot find layer ${layer}.`);
+        return layer;
+    }
+
+    getTempLayerByName(name: string): TempLayer {
+        const layer = this.tempLayers.find(layer => layer.name == name);
+        if (!layer) throw Error(`Cannot find temp layer ${layer}.`);
+        return layer;
+    }
+
     setTexture(texture: Texture) {
-        this.data.set(Skin.possiblyResize(this.model, texture).data); // Will keep shape
+        this.data.set(Skin.possiblyResize(this.model, Skin.flipY(texture)).data); // Will keep shape
         this.layers = [new Layer(this, "default")];
         this.layers[0].data = new Uint8ClampedArray(this.data);
         this.activeLayerId = this.layers[0].uuid;
@@ -163,7 +208,9 @@ export class MutableSkin extends Skin {
         // Model could change texture size, recreate data!
         const texSize = model.texture_size[0] * model.texture_size[1] * 4;
         this.data = new Uint8ClampedArray(texSize);
-        this.tempLayer.data = new Uint8ClampedArray(texSize)
+        for (const tempLayer of this.tempLayers) {
+            tempLayer.data = new Uint8ClampedArray(texSize);
+        }
         for (let pos = 0; pos < this.data.length; pos += 4) {
             this.updatePixel(pos);
         }
@@ -177,24 +224,54 @@ export class MutableSkin extends Skin {
      * @param pos offset in texture buffer
      */
     updatePixel(pos: number) {
+        const color = this.getPixelByPos(pos);
+        const [width, height] = this.model.texture_size;
+        const x = (pos / 4) % width;
+        const y = Math.floor((pos / 4) / width);
+        const flipY = (height - 1) - y;
+
+        const newPos = (flipY * width + x) * 4;
+        this.data.set([color.r, color.g, color.b, Math.floor(color.a * 255)], newPos);
+        this.texture.needsUpdate = true;
+    }
+
+    /**
+     * Gets the pixel at coords `(x, y)`.
+     */
+    getPixel(x: number, y: number): RgbaColor {
+        return this.getPixelByPos(this.getPos(x, y));
+    }
+
+    /**
+     * Gets the pixel at the given texture position `pos`.
+     *
+     * @param pos offset in texture buffer
+     */
+    getPixelByPos(pos: number): RgbaColor {
         let color = { r: 0, g: 0, b: 0, a: 0 };
-        for (let i = 0; i < this.layers.length + 1; i++) {
+        for (let i = 0; i < this.layers.length + this.tempLayers.length; i++) {
             let layer: Layer;
-            if (i === this.layers.length) {
-                layer = this.tempLayer; // Use temp layer as last layer
+            if (i >= this.layers.length) {
+                layer = this.tempLayers[i - this.layers.length]; // Finally, temp layers
             } else {
                 layer = this.layers[i];
             }
             if (!layer.isActive) continue; // Skip hidden layers
             const layerColor = layer.getPixelByPos(pos);
-            if (layerColor.a === 255) { // Alpha already transformed to 0-255 by layer
+            if (layerColor.a === 1) { // Alpha already transformed to 0-255 by layer
                 color = layerColor;
             } else {
                 color = rgbaBlendNormal(color, layerColor);
             }
         }
-        this.data.set([color.r, color.g, color.b, color.a], pos);
-        this.texture.needsUpdate = true;
+        return { r: color.r, g: color.g, b: color.b, a: color.a };
+    }
+
+    /**
+     * Gets the offset in texture buffer of coords `(x, y)`.
+     */
+    getPos(x: number, y: number) {
+        return (x + y * this.model.texture_size[0]) * 4;
     }
 
     get activeLayer(): Layer {
@@ -248,9 +325,8 @@ export class Layer {
      * Gets the pixel at coords `(x, y)`.
      */
     getPixel(x: number, y: number): RgbaColor {
-        const pos = (x * 4) + ((y * this.skin.model.texture_size[1] - 1) * 4);
-        const c = this.getPixelByPos(pos);
-        return { r: c.r, g: c.g, b: c.b, a: c.a / 255 };
+        const c = this.getPixelByPos(this.skin.getPos(x, y));
+        return { r: c.r, g: c.g, b: c.b, a: c.a };
     }
 
     /**
@@ -276,17 +352,28 @@ export class Layer {
     setPixel(
         x: number, y: number,
         color: RgbaColor,
-        blend = true,
+        blend: boolean = true,
     ) {
-        let c = { r: color.r, g: color.g, b: color.b, a: Math.floor(color.a * 255) };
-        const pos = (x * 4) + ((y * this.skin.model.texture_size[1] - 1) * 4);
+        this.setPixelByPos(this.skin.getPos(x, y), color, blend);
+    }
+
+    /**
+     * Sets the pixel at the given texture position `pos`.
+     *
+     * @param pos offset in texture buffer
+     * @param color color to set
+     * @param blend should color be blended (only affects colors with alpha)
+     */
+    setPixelByPos(
+        pos: number, color: RgbaColor, blend: boolean = true
+    ) {
         if (blend) {
-            if (c.a !== 255) { // Mix colors if color is transparent
+            if (color.a !== 1) { // Mix colors if color is transparent
                 const current = this.getPixelByPos(pos);
-                c = rgbaBlendNormal(current, c);
+                color = rgbaBlendNormal(current, color);
             }
         }
-        this.data.set([c.r, c.g, c.b, c.a], pos);
+        this.data.set([color.r, color.g, color.b, color.a], pos);
         this.skin.updatePixel(pos);
     }
 
@@ -297,20 +384,18 @@ export class Layer {
  */
 export class TempLayer extends Layer {
 
-    set: Set<Array<number>>;
+    set: Set<number>;
 
-    constructor(skin: MutableSkin) {
-        super(skin, "temp");
+    constructor(skin: MutableSkin, name: string) {
+        super(skin, name);
         this.set = new Set();
     }
 
-    override setPixel(
-        x: number, y: number,
-        color: RgbaColor,
-        blend = true
+    override setPixelByPos(
+        pos: number, color: RgbaColor, blend: boolean = true
     ) {
-        this.set.add([x, y])
-        super.setPixel(x, y, color, blend);
+        this.set.add(pos);
+        super.setPixelByPos(pos, color, blend);
     }
 
     /**
@@ -318,7 +403,7 @@ export class TempLayer extends Layer {
      */
     clear() {
         this.set.forEach((pos) => {
-            super.setPixel(pos[0], pos[1], {r: 0, g: 0, b: 0, a: 0}, false);
+            super.setPixelByPos(pos, { r: 0, g: 0, b: 0, a: 0 }, false);
         });
         this.set.clear();
     }

@@ -1,12 +1,20 @@
-import React, {useEffect, useRef, useState} from "react";
+import "./style.scss";
 
-import {Indicator} from "./Indicator.tsx";
-import {useWindowEvent} from "../../hooks/useWindowEvent";
-import {useColorContext} from "../../stores.ts";
-import {noContextMenu} from "../../utils/helpers.ts";
+import React, { useEffect, useRef, useState } from "react";
 
-export const Slider: React.FC = () => {
-    const { hsva, setHsva } = useColorContext();
+import { useWindowEvent } from "../../hooks/useWindowEvent";
+import { noContextMenu } from "../../utils/helpers.ts";
+import { Indicator } from "../Indicator";
+import { HsvaColor } from "colord";
+
+type ColorHueSliderProps = {
+    hsva: HsvaColor,
+    setHsva: (hsva: HsvaColor) => void
+};
+
+export const ColorHueSlider: React.FC<ColorHueSliderProps> = ({
+    hsva, setHsva
+}) => {
     const [pos, setPos] = useState({ x: 0, y: 0 });
 
     const button = useRef(-1);
@@ -32,6 +40,15 @@ export const Slider: React.FC = () => {
         setHsva(newHsva);
     }
 
+    function updatePos() {
+        if (!divRef.current) return;
+        const rect = divRef.current.getBoundingClientRect();
+
+        const x = Math.floor(rect.width * hsva.h / 720) * 2;
+        const y = rect.height / 2;
+        setPos({ x, y });
+    }
+
     useWindowEvent("mouseup", (event: MouseEvent) => {
         if (button.current === event.button) {
             document.getElementById("color-cursor-overlay")!.style.display = "none";
@@ -43,18 +60,12 @@ export const Slider: React.FC = () => {
         if (button.current !== -1) updateHue(event.clientX);
     }, [hsva]);
 
-    useEffect(() => {
-        if (!divRef.current) return;
-        const rect = divRef.current.getBoundingClientRect();
-
-        const x = rect.width * hsva.h / 360;
-        const y = rect.height / 2;
-        setPos({ x, y });
-    }, [hsva]);
+    useWindowEvent("resize", updatePos);
+    useEffect(() => updatePos, [hsva]);
 
     return (
         <div
-            className="color-slider"
+            className="color-hue-slider"
             tabIndex={0}
             ref={divRef}
             onMouseDown={onMouseDown}

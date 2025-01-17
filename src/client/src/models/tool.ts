@@ -66,7 +66,7 @@ export class PencilHandler extends ToolHandler {
     }
 
     hover(skin: MutableSkin, x: number, y: number, color: RgbaColor) {
-        const layer = skin.tempLayer;
+        const layer = skin.getTempLayerByName("hover");
         layer.setPixel(x, y, color);
     }
 
@@ -99,7 +99,7 @@ export class PencilHandler extends ToolHandler {
 export class EraserHandler extends ToolHandler {
 
     hover(skin: MutableSkin, x: number, y: number, color: RgbaColor) {
-        const layer = skin.tempLayer;
+        const layer = skin.getTempLayerByName("hover");
         layer.setPixel(x, y, { r: 0, g: 0, b: 0, a: 0.5 });
     }
 
@@ -151,7 +151,7 @@ export class FillHandler extends ToolHandler {
             // console.log(pos, base, col);
             if (colord(base).delta(col) <= tolerance / 100) {
                 if (temp) {
-                    skin.tempLayer.setPixel(pos[0], pos[1], { r: color.r, g: color.g, b: color.b, a: 0.2 });
+                    skin.getTempLayerByName("hover").setPixel(pos[0], pos[1], { r: color.r, g: color.g, b: color.b, a: 0.2 });
                 } else {
                     sampleLayer.setPixel(pos[0], pos[1], { r: color.r, g: color.g, b: color.b, a: color.a });
                 }

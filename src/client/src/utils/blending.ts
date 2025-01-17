@@ -5,7 +5,7 @@ export type BlendFunc = (backdrop: RgbaColor, src: RgbaColor) => RgbaColor;
 export function blendData(
     backdrop: Uint8ClampedArray,
     src: Uint8ClampedArray,
-    func: BlendFunc
+    func: BlendFunc,
 ): Uint8ClampedArray {
     if (backdrop.length !== src.length) throw Error("Unmatched data source lengths");
     const result = new Uint8ClampedArray(backdrop.length);
@@ -28,11 +28,11 @@ export function rgbaBlendNormal(backdrop: RgbaColor, src: RgbaColor): RgbaColor 
     const { r: r1, g: g1, b: b1, a: a1 } = backdrop;
     const { r: r2, g: g2, b: b2, a: a2 } = src;
 
-    const a = (a2 / 255) + (a1 / 255) * (1 - (a2 / 255));
+    const a = a2 + a1 * (1 - a2);
 
-    const r = r1 + (r2 - r1) * (a2 / 255) / a;
-    const g = g1 + (g2 - g1) * (a2 / 255) / a;
-    const b = b1 + (b2 - b1) * (a2 / 255) / a;
+    const r = r1 + (r2 - r1) * a2 / a;
+    const g = g1 + (g2 - g1) * a2 / a;
+    const b = b1 + (b2 - b1) * a2 / a;
 
-    return { r: r, g: g, b: b, a: a * 255 };
+    return { r: r, g: g, b: b, a: a };
 }

@@ -1,24 +1,22 @@
 :root {
     --main-color: #81919d;
+    --secondary-color: #d3cbbe;
     --inlay-color: #625660;
-
-    --header-color: #d2cbbf;
-    --status-color: var(--main-color);
     --error-color: #ff4444;
 
-    --primary-text: #000000;
-    --secondary-text: #2c2f31;
-    --link-text: #0017ff;
-
-    --border-dark: #000000;
-    --border-color: #61555f;
-    --border-light: #b3c9dc;
+    --text-primary: #000000;
+    --text-secondary: #2c2f31;
+    --text-link: #0017ff;
 
     --icon-color: #000000;
 
     --button-color: #c6c6c6;
     --button-hover: #ffffff;
     --button-selected: #ffffff;
+
+    --border-dark: #000000;
+    --border-color: #61555f;
+    --border-light: #b3c9dc;
 }
 
 .scene {
@@ -26,54 +24,13 @@
     --border-color: #ffffff;
 }
 
-.workspace {
-    padding: 0 12px 0 12px !important;
-}
-
-.status-bar {
-    margin: 0 !important;
-    box-shadow: none !important;
-}
-
-.toolbar {
-    width: 40px !important;
-    gap: 0 !important;
-    order: 9999 !important;
-}
-
-.toolbar .button-container {
-    aspect-ratio: 1/1 !important;
-    margin: 0; !important;
-}
-
-.toolbar .button-container:nth-child(6) {
-    order: -1;
-}
-
 .button {
-    margin: 4px !important;
-    padding: 0 !important;
-    box-shadow: 2px 0 0 0 #ffffff, -2px 0 0 0 #ffffff, 0 2px 0 0 #ffffff, 0 -2px 0 0 #ffffff, 0 0 0 2px #81919d, 0 0 0 4px #000000 !important;
-    aspect-ratio: 1/1 !important;
-}
-
-.logo {
-    display: none !important;
-}
-
-.logo-container:before {
-    content: "Asecape";
-    letter-spacing: 4px;
-}
-
-.status-text {
-    color: var(--secondary-text) !important;
-    text-shadow: none !important;
+    --border-light: #ffffff;
 }
 
 .picker:before {
-    background: none !important;
+    background: none;
 }
 .slider:before {
-    background: none !important;
+    background: none;
 }

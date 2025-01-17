@@ -1,3 +1,5 @@
+import "./style.scss";
+
 import React from "react";
 
 type IndicatorProps = {
@@ -13,6 +15,6 @@ export const Indicator: React.FC<IndicatorProps> = ({
     } as React.CSSProperties;
 
     return (
-        <div className="color-indicator" style={style} />
-    )
+        <div className="indicator" style={style} />
+    );
 }

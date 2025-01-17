@@ -6,19 +6,20 @@ import { useDialog } from "../../hooks/useDialog/useDialog";
 import { Dialog } from "../../components/Dialog";
 
 type InputDialogProps = {
+    title?: string,
     label?: string,
     onEnter: (input: string) => void,
 };
 
 export const InputDialog = forwardRef<
     HTMLInputElement, InputDialogProps & React.ComponentProps<typeof Input>
->(({ label, onEnter, ...props }, ref) => {
+>(({ title, label, onEnter, ...props }, ref) => {
     const { hideDialog } = useDialog();
 
     return (
-        <Dialog>
+        <Dialog title={title}>
             {label && <p>{label}:</p>}
-            <Input 
+            <Input
                 ref={ref}
                 {...props}
                 onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
