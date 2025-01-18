@@ -20,7 +20,7 @@ export const HueSaturationDialog: React.FC = () => {
         const layer = skin.getTempLayerByName("effect");
         layer.clear();
 
-        for (let pos = 0; pos < skin.data.length; pos += 4) {
+        for (let pos = 0; pos < skin.dataLength(); pos += 4) {
             const color = skin.getPixelByPos(pos);
             const newColor = colord(color).rotate(hsva.h).lighten((hsva.v - 50) / 100).desaturate((hsva.s - 50) / 100).toRgb();
             layer.setPixelByPos(pos, newColor, false);

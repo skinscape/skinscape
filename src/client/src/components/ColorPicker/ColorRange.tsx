@@ -60,7 +60,7 @@ export const ColorRange: React.FC<ColorRangeProps> = ({
     }, [hsva]);
 
     useWindowEvent("resize", updatePos);
-    useEffect(() => updatePos, [hsva]);
+    useEffect(updatePos, [hsva]);
 
     const style = {
         "--color": colord({ h: hsva.h, s: 100, v: 100, a: 1 }).toHex(),

@@ -61,7 +61,7 @@ export const ColorValueSlider: React.FC<ColorValueSliderProps> = ({
     }, [hsva]);
 
     useWindowEvent("resize", updatePos);
-    useEffect(() => updatePos, [hsva]);
+    useEffect(updatePos, [hsva]);
 
     return (
         <div

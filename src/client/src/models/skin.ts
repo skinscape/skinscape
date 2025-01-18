@@ -107,7 +107,11 @@ export class Skin {
         return {
             data: newTexture,
             size: texture.size
-        }
+        };
+    }
+
+    dataLength(): number {
+        return this.data.length;
     }
 
 }

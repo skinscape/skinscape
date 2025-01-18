@@ -60,7 +60,7 @@ export const ColorSaturationSlider: React.FC<ColorSaturationSliderProps> = ({
     }, [hsva]);
 
     useWindowEvent("resize", updatePos);
-    useEffect(() => updatePos, [hsva]);
+    useEffect(updatePos, [hsva]);
 
     return (
         <div
